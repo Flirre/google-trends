@@ -1,0 +1,28 @@
+.container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    color: white;
+}
+
+.red {
+    background: red;
+}
+
+.row {
+    height: 33% !important;
+}
+
+.grid {
+    height: 100%;
+}
+
+h1 {
+    font-size: 5em;
+}
+
+h2 {
+    font-size: 4em;
+}
