@@ -11,8 +11,16 @@
     background: red;
 }
 
+.blue {
+    background: blue;
+}
+
+#switcher {
+    height: 10%;
+}
+
 .row {
-    height: 33% !important;
+    height: 33%;
 }
 
 .grid {
