@@ -1,13 +1,25 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
+import Blue from './Blue';
 import Red from './Red';
-/* import Blue from './Blue'; */
 
-class App extends React.Component {
+class App extends React.Component<any, any> {
+    constructor(props: any) {
+	super(props);
+	this.switch = this.switch.bind(this);
+	this.state = { red: true, text: "abc" };
+    }
+
+    public switch() {
+	    this.setState({red: !this.state.red});
+    }
+
     public render() {
         return (
-            < Red />
+	    this.state.red ?
+            < Red switch = {this.switch} /> :
+	    < Blue switch = {this.switch} />
         );
     }
 }

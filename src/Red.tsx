@@ -2,13 +2,17 @@ import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import { Button, Grid } from 'semantic-ui-react'
 
-class Red extends React.Component {
+class Red extends React.Component<any> {
+    constructor(props: any) {
+	super(props);
+    }
+
     public render() {
         return (
             <div className="container red">
                 <Grid rows={3} columns={3}>
                     <Grid.Row verticalAlign="top">
-                        <Button id="switcher" size="mini" floated="left" color="blue" content="Switch" onClick={this.log} />
+                        <Button id="switcher" size="mini" floated="left" color="blue" content="Switch" onClick={this.props.switch} />
                     </Grid.Row>
                     <Grid.Row verticalAlign="middle">
                         <Grid.Column />
