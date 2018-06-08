@@ -12,7 +12,13 @@ class Red extends React.Component<any> {
             <div className="container red">
                 <Grid rows={3} columns={3}>
                     <Grid.Row verticalAlign="top">
-                        <Button id="switcher" size="mini" floated="left" color="blue" content="Switch" onClick={this.props.switch} />
+			<Grid.Column>
+                            <Button id="switcher" size="mini" floated="left" color="blue" content="Switch" onClick={this.props.switch} />
+			</Grid.Column>
+			<Grid.Column/>
+			<Grid.Column>
+			    <Button id="switcher" size="mini" floated="right" color="blue" content="Increment" onClick={this.props.increment} />
+			</Grid.Column>
                     </Grid.Row>
                     <Grid.Row verticalAlign="middle">
                         <Grid.Column />
@@ -22,7 +28,7 @@ class Red extends React.Component<any> {
                                     Team 1
 				</h1>
                                 <h2>
-                                    Points: 0
+                                    Points: {this.props.points}
 				</h2>
                             </div>
                         </Grid.Column>
