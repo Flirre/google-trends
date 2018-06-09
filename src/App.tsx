@@ -90,7 +90,7 @@ class App extends React.Component<any, any> {
         <Button
           id="fullscreen"
           fluid={true}
-          primary={true}
+          color="grey"
           size="mini"
           content="Fullscreen toggle"
           attached="bottom"

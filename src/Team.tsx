@@ -18,7 +18,7 @@ class Team extends React.Component<any> {
               <Button
                 size="mini"
                 floated="left"
-                color={this.props.buttonColor}
+                className={this.props.buttonColor}
                 content="Switch"
                 onClick={this.props.switch}
               />
@@ -28,7 +28,7 @@ class Team extends React.Component<any> {
               <Button
                 size="mini"
                 floated="right"
-                color={this.props.buttonColor}
+                className={this.props.buttonColor}
                 content="Increment"
                 onClick={this.props.increment}
               />
@@ -52,7 +52,7 @@ class Team extends React.Component<any> {
         <Button
           id="fullscreen"
           fluid={true}
-          primary={true}
+          color="grey"
           size="mini"
           content="Fullscreen toggle"
           attached="bottom"
