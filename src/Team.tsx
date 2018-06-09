@@ -1,6 +1,6 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Button, Grid } from 'semantic-ui-react'
+import { Button, Grid } from 'semantic-ui-react';
 
 class Team extends React.Component<any> {
     constructor(props: any) {
@@ -9,15 +9,15 @@ class Team extends React.Component<any> {
 
     public render() {
         return (
-            <div className={`container ${this.props.color}`}>
-                <Grid rows={3} columns={3}>
+            <div className={`${this.props.color} ${this.props.className||"shared"}`}>
+                <Grid rows={3} columns={3} textAlign="center">
                     <Grid.Row verticalAlign="top">
 			<Grid.Column>
-                            <Button id="switcher" size="mini" floated="left" color={this.props.buttonColor} content="Switch" onClick={this.props.switch} />
+                            <Button size="mini" floated="left" color={this.props.buttonColor} content="Switch" onClick={this.props.switch} />
 			</Grid.Column>
 			<Grid.Column/>
 			<Grid.Column>
-			    <Button id="switcher" size="mini" floated="right" color={this.props.buttonColor} content="Increment" onClick={this.props.increment} />
+			    <Button size="mini" floated="right" color={this.props.buttonColor} content="Increment" onClick={this.props.increment} />
 			</Grid.Column>
                     </Grid.Row>
                     <Grid.Row verticalAlign="middle">
@@ -28,13 +28,16 @@ class Team extends React.Component<any> {
                                     {this.props.teamName}
 				</h1>
                                 <h2>
-                                    Points: {this.props.points}
+                                    Points:
+				    <p id="points">
+					{this.props.points}
+				    </p>
 				</h2>
                             </div>
                         </Grid.Column>
                         <Grid.Column />
                     </Grid.Row>
-                    <Grid.Row />
+                    <Grid.Row verticalAlign="bottom" />
 
                 </Grid>
             </div >

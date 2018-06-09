@@ -1,3 +1,6 @@
+body {
+    color: white;
+}
 .container {
     position: fixed;
     bottom: 0;
@@ -15,16 +18,26 @@
     background: blue;
 }
 
-#switcher {
-    height: 10%;
+.no-pad {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    height: 100% !important;
+    margin-bottom: 2em;
 }
 
-.row {
-    height: 33%;
+.button {
+    border-radius: 0px !important;
+}
+
+.shared {
+    height: 103%;
+    padding-bottom: 2em;
 }
 
 .grid {
     height: 100%;
+
 }
 
 h1 {
@@ -33,4 +46,8 @@ h1 {
 
 h2 {
     font-size: 4em;
+    line-height: 0.9;
+}
+
+#points {
 }
