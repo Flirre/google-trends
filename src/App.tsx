@@ -1,8 +1,7 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
-import Blue from './Blue';
-import Red from './Red';
+import Team from './Team';
 
 class App extends React.Component<any, any> {
     constructor(props: any) {
@@ -32,8 +31,8 @@ class App extends React.Component<any, any> {
     public render() {
         return (
 	    this.state.red ?
-            < Red switch = {this.switch} points = {this.state.team1} increment={this.incrementTeam1} /> :
-	    < Blue switch = {this.switch} points = {this.state.team2} increment={this.incrementTeam2} />
+            < Team color="red" buttonColor="blue" teamName="Team 1" switch = {this.switch} points = {this.state.team1} increment={this.incrementTeam1} /> :
+	    < Team color="blue" buttonColor="red" teamName="Team 2" switch = {this.switch} points = {this.state.team2} increment={this.incrementTeam2} />
         );
     }
 }
