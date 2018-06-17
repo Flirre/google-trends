@@ -39,16 +39,13 @@ class Team extends React.Component<any> {
             <Grid.Column textAlign="center">
               <div className="content">
                 <div
-                  className={`${
+                  className={`shadow ${
                     this.props.fullscreen ? "team-fullscreen" : "team"
                   }`}
                 >
                   <h1>{this.props.teamName}</h1>
                 </div>
-                <h2>
-                  Points:
-                  <p id="points">{this.props.points}</p>
-                </h2>
+                <h2 className="shadowtext">{this.props.points} POINTS</h2>
               </div>
             </Grid.Column>
             <Grid.Column />

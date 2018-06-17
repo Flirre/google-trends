@@ -68,7 +68,7 @@ class App extends React.Component<any, any> {
             <Team
               color="red"
               buttonColor="blue"
-              teamName="Team 1"
+              teamName="TEAM 1"
               switch={this.switch}
               points={this.state.team1}
               increment={this.incrementTeam1}
@@ -79,7 +79,7 @@ class App extends React.Component<any, any> {
             <Team
               color="blue"
               buttonColor="red"
-              teamName="Team 2"
+              teamName="TEAM 2"
               switch={this.switch}
               points={this.state.team2}
               increment={this.incrementTeam2}
