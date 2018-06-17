@@ -22,9 +22,9 @@ body {
 .team {
   color: #2a2a2a;
   background-color: #fbbc05;
-  width: 52vw;
+  width: 50vw;
   position: relative;
-  left: calc(-26vw + 50%);
+  left: calc(-25vw + 50%);
 }
 
 .team-fullscreen {
@@ -36,11 +36,14 @@ body {
 }
 
 .shadow {
-  box-shadow: 0 0.3em 0 0.1em rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.5em 0 0.025em rgba(0, 0, 0, 0.15);
 }
 
 .shadowtext {
   text-shadow: 0 0.06em 0 rgba(0, 0, 0, 0.15);
+  width: 100vw;
+  position: relative;
+  left: calc(-50vw + 50%);
 }
 
 .no-pad {
@@ -51,13 +54,21 @@ body {
   margin-bottom: 2em;
 }
 
+.ui.grid {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 .button {
   border-radius: 0 !important;
+  margin-left: -1rem !important;
+  margin-right: -1rem !important;
 }
 
 .shared {
-  height: 103%;
-  padding-bottom: 2em;
+  height: 100%;
+
+  /* padding-bottom: 2em; */
 }
 
 .grid {
@@ -78,4 +89,6 @@ h2 {
   bottom: 0;
   left: 0;
   right: 0;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
