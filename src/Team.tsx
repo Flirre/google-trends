@@ -38,7 +38,13 @@ class Team extends React.Component<any> {
             <Grid.Column />
             <Grid.Column textAlign="center">
               <div className="content">
-                <h1>{this.props.teamName}</h1>
+                <div
+                  className={`${
+                    this.props.fullscreen ? "team-fullscreen" : "team"
+                  }`}
+                >
+                  <h1>{this.props.teamName}</h1>
+                </div>
                 <h2>
                   Points:
                   <p id="points">{this.props.points}</p>
@@ -60,11 +66,6 @@ class Team extends React.Component<any> {
         />
       </div>
     );
-  }
-
-  public log() {
-    // tslint:disable-next-line:no-console
-    console.log("switch");
   }
 }
 

@@ -18,6 +18,22 @@ body {
     background-color: #4285f4 !important;
 }
 
+.team {
+    color: black;
+    background-color: yellow;
+    width: 52vw;
+    position: relative;
+    left: calc(-26vw + 50%);
+}
+
+.team-fullscreen {
+    color: black;
+    background-color: yellow;
+    width: 100vw;
+    position: relative;
+    left: calc(-50vw + 50%);
+}
+
 .no-pad {
     padding-left: 0px !important;
     padding-right: 0px !important;
