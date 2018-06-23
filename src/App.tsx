@@ -10,8 +10,17 @@ class App extends React.Component<any, any> {
     this.switch = this.switch.bind(this);
     this.incrementTeam1 = this.incrementTeam1.bind(this);
     this.incrementTeam2 = this.incrementTeam2.bind(this);
+    this.setTeam1Name = this.setTeam1Name.bind(this);
+    this.setTeam2Name = this.setTeam2Name.bind(this);
     this.fullscreenToggle = this.fullscreenToggle.bind(this);
-    this.state = { red: true, team1: 0, team2: 0, fullscreen: false };
+    this.state = {
+      fullscreen: false,
+      red: true,
+      team1Name: "1",
+      team1Points: 0,
+      team2Name: "2",
+      team2Points: 0
+    };
   }
 
   public switch() {
@@ -20,14 +29,22 @@ class App extends React.Component<any, any> {
 
   public incrementTeam1() {
     this.setState((prevState: any, props: any) => ({
-      team1: prevState.team1 + Math.floor(Math.random() * 100)
+      team1Points: prevState.team1Points + Math.floor(Math.random() * 100)
     }));
   }
 
   public incrementTeam2() {
     this.setState((prevState: any, props: any) => ({
-      team2: prevState.team2 + Math.floor(Math.random() * 100)
+      team2Points: prevState.team2Points + Math.floor(Math.random() * 100)
     }));
+  }
+
+  public setTeam1Name(name: string) {
+    this.setState({ team1Name: name });
+  }
+
+  public setTeam2Name(name: string) {
+    this.setState({ team2Name: name });
   }
 
   public fullscreenToggle() {
@@ -41,9 +58,9 @@ class App extends React.Component<any, any> {
           className="container"
           color="red"
           buttonColor="blue"
-          teamName="TEAM 1"
+          teamName={"TEAM " + this.state.team1Name.toUpperCase()}
           switch={this.switch}
-          points={this.state.team1}
+          points={this.state.team1Points}
           increment={this.incrementTeam1}
           fullscreen={this.state.fullscreen}
           fullscreenToggle={this.fullscreenToggle}
@@ -53,9 +70,9 @@ class App extends React.Component<any, any> {
           className="container"
           color="blue"
           buttonColor="red"
-          teamName="TEAM 2"
+          teamName={"TEAM " + this.state.team2Name.toUpperCase()}
           switch={this.switch}
-          points={this.state.team2}
+          points={this.state.team2Points}
           increment={this.incrementTeam2}
           fullscreen={this.state.fullscreen}
           fullscreenToggle={this.fullscreenToggle}
@@ -68,9 +85,9 @@ class App extends React.Component<any, any> {
             <Team
               color="red"
               buttonColor="blue"
-              teamName="TEAM 1"
+              teamName={"TEAM " + this.state.team1Name.toUpperCase()}
               switch={this.switch}
-              points={this.state.team1}
+              points={this.state.team1Points}
               increment={this.incrementTeam1}
             />
           </Grid.Column>
@@ -79,9 +96,9 @@ class App extends React.Component<any, any> {
             <Team
               color="blue"
               buttonColor="red"
-              teamName="TEAM 2"
+              teamName={"TEAM " + this.state.team2Name.toUpperCase()}
               switch={this.switch}
-              points={this.state.team2}
+              points={this.state.team2Points}
               increment={this.incrementTeam2}
             />
           </Grid.Column>
