@@ -1,8 +1,8 @@
-import * as React from "react";
-import "semantic-ui-css/semantic.min.css";
-import { Button, Grid } from "semantic-ui-react";
-import "./App.css";
-import Team from "./Team";
+import * as React from 'react';
+import 'semantic-ui-css/semantic.min.css';
+import { Button, Grid } from 'semantic-ui-react';
+import './App.css';
+import Team from './Team';
 
 class App extends React.Component<any, any> {
   constructor(props: any) {
@@ -16,9 +16,9 @@ class App extends React.Component<any, any> {
     this.state = {
       fullscreen: false,
       red: true,
-      team1Name: "1",
+      team1Name: '1',
       team1Points: 0,
-      team2Name: "2",
+      team2Name: '2',
       team2Points: 0
     };
   }
@@ -58,7 +58,7 @@ class App extends React.Component<any, any> {
           className="container"
           color="red"
           buttonColor="blue"
-          teamName={"TEAM " + this.state.team1Name.toUpperCase()}
+          teamName={'TEAM ' + this.state.team1Name.toUpperCase()}
           switch={this.switch}
           points={this.state.team1Points}
           increment={this.incrementTeam1}
@@ -70,7 +70,7 @@ class App extends React.Component<any, any> {
           className="container"
           color="blue"
           buttonColor="red"
-          teamName={"TEAM " + this.state.team2Name.toUpperCase()}
+          teamName={'TEAM ' + this.state.team2Name.toUpperCase()}
           switch={this.switch}
           points={this.state.team2Points}
           increment={this.incrementTeam2}
@@ -85,7 +85,7 @@ class App extends React.Component<any, any> {
             <Team
               color="red"
               buttonColor="blue"
-              teamName={"TEAM " + this.state.team1Name.toUpperCase()}
+              teamName={'TEAM ' + this.state.team1Name.toUpperCase()}
               switch={this.switch}
               points={this.state.team1Points}
               increment={this.incrementTeam1}
@@ -96,7 +96,7 @@ class App extends React.Component<any, any> {
             <Team
               color="blue"
               buttonColor="red"
-              teamName={"TEAM " + this.state.team2Name.toUpperCase()}
+              teamName={'TEAM ' + this.state.team2Name.toUpperCase()}
               switch={this.switch}
               points={this.state.team2Points}
               increment={this.incrementTeam2}

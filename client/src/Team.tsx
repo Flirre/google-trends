@@ -1,6 +1,6 @@
-import * as React from "react";
-import "semantic-ui-css/semantic.min.css";
-import { Button, Grid } from "semantic-ui-react";
+import * as React from 'react';
+import 'semantic-ui-css/semantic.min.css';
+import { Button, Grid } from 'semantic-ui-react';
 
 class Team extends React.Component<any> {
   constructor(props: any) {
@@ -10,7 +10,7 @@ class Team extends React.Component<any> {
   public render() {
     return (
       <div
-        className={`${this.props.color} ${this.props.className || "shared"}`}
+        className={`${this.props.color} ${this.props.className || 'shared'}`}
       >
         <Grid rows={3} columns={3} textAlign="center">
           <Grid.Row verticalAlign="top">
@@ -40,7 +40,7 @@ class Team extends React.Component<any> {
               <div className="content">
                 <div
                   className={`shadow ${
-                    this.props.fullscreen ? "team-fullscreen" : "team"
+                    this.props.fullscreen ? 'team-fullscreen' : 'team'
                   }`}
                 >
                   <h1>{this.props.teamName}</h1>
