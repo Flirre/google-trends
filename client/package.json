@@ -44,12 +44,12 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "prettier --parser typescript --write",
+      "prettier --single-quote --parser typescript --write",
       "tslint --fix",
       "git add"
     ],
     "*.{js, jsx, json}": [
-      "prettier --write",
+      "prettier --single-quote --write",
       "git add"
     ],
     "*.css": [
