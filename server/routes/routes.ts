@@ -8,15 +8,18 @@ export class Routes {
       googleTrends
         .interestOverTime({ keyword: "Women's march" })
         .then(function(results: any) {
-          console.log('These results are awesome', results);
+          let JSONresults = JSON.parse(results);
+          let formattedResults = JSONresults['default']['timelineData'];
+          res.status(200).send({
+            message: formattedResults.slice(
+              formattedResults.length - 12,
+              formattedResults.length
+            )
+          });
         })
         .catch(function(err: any) {
           console.error('Oh no there was an error', err);
         });
-
-      res.status(200).send({
-        message: 'GET req succ'
-      });
     });
   }
 }
