@@ -14,6 +14,7 @@ class App extends React.Component<any, any> {
     this.setTeam2Name = this.setTeam2Name.bind(this);
     this.fullscreenToggle = this.fullscreenToggle.bind(this);
     this.state = {
+      data: null,
       fullscreen: false,
       red: true,
       team1Name: '1',
@@ -49,6 +50,18 @@ class App extends React.Component<any, any> {
 
   public fullscreenToggle() {
     this.setState({ fullscreen: !this.state.fullscreen });
+  }
+
+  public componentDidMount() {
+    /* tslint:disable */
+    fetch('http://localhost:3001')
+      .then(results => {
+        return results.json();
+      })
+      .then(jsonResults => {
+        this.setState({ data: jsonResults });
+      });
+    /* tslint:enable */
   }
 
   public render() {
