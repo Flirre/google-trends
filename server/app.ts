@@ -17,7 +17,7 @@ class App {
   private config(): void {
     this.app.use(cors());
     this.app.options('*', cors()); // enable pre-flight
-    this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(bodyParser.json());
   }
 }

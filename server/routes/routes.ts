@@ -24,7 +24,7 @@ export class Routes {
         formattedResults.forEach(function(data: any) {
           trendData.push({
             date: data['formattedTime'],
-            value: data['value']
+            value: data['value'][0]
           });
         });
       })
