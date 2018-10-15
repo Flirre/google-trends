@@ -116,7 +116,6 @@ class App extends React.Component<any, any> {
             />
           </Grid.Column>
         </Grid>
-
         <Button
           id="fullscreen"
           fluid={true}

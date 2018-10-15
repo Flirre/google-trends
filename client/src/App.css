@@ -92,3 +92,14 @@ h2 {
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
+
+.chart-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.chart {
+  height: 50%;
+}
