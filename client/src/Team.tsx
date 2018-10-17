@@ -1,6 +1,6 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Button, Grid } from 'semantic-ui-react';
+import { Button, Grid, Input } from 'semantic-ui-react';
 import Chart from './Chart';
 
 enum Types {
@@ -14,9 +14,14 @@ class Team extends React.Component<any, any> {
     super(props);
 
     this.state = {
+      searchTerm: String,
       type: Types.Trend
     };
   }
+
+  public onInputChange = (e: any) => {
+    this.setState({ searchTerm: e.target.value });
+  };
 
   public render() {
     const isPoint = this.state.type === Types.Point;
@@ -81,6 +86,13 @@ class Team extends React.Component<any, any> {
             <div className="chart-container">
               <div className="chart">
                 <Chart />
+                <div className="input">
+                  <Input
+                    action={<Button icon="search" />}
+                    placeholder="Enter a search term"
+                    onChange={this.onInputChange}
+                  />
+                </div>
               </div>
             </div>
             <Button
