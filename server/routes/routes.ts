@@ -20,10 +20,12 @@ export class Routes {
       .interestOverTime({ keyword: "Women's march" })
       .then((results: any) => {
         let JSONresults = JSON.parse(results);
-        let formattedResults = JSONresults['default']['timelineData'];
+        let formattedResults = JSONresults['default']['timelineData'].slice(
+          -12
+        );
         formattedResults.forEach(function(data: any) {
           trendData.push({
-            date: data['formattedTime'],
+            date: data['formattedTime'].substring(0, 3),
             value: data['value'][0]
           });
         });
