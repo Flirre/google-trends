@@ -14,13 +14,18 @@ class Team extends React.Component<any, any> {
     super(props);
 
     this.state = {
-      searchTerm: String,
+      inputSearchTerm: '',
+      searchTerm: '',
       type: Types.Trend
     };
   }
 
   public onInputChange = (e: any) => {
-    this.setState({ searchTerm: e.target.value });
+    this.setState({ inputSearchTerm: e.target.value });
+  };
+
+  public updateSearchTerm = (e: any) => {
+    this.setState({ searchTerm: this.state.inputSearchTerm });
   };
 
   public render() {
@@ -85,10 +90,12 @@ class Team extends React.Component<any, any> {
           <React.Fragment>
             <div className="chart-container">
               <div className="chart">
-                <Chart />
+                <Chart searchTerm={this.state.searchTerm} />
                 <div className="input">
                   <Input
-                    action={<Button icon="search" />}
+                    action={
+                      <Button icon="search" onClick={this.updateSearchTerm} />
+                    }
                     placeholder="Enter a search term"
                     onChange={this.onInputChange}
                   />
