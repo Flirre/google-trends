@@ -15,6 +15,7 @@ class Chart extends React.Component<any, any> {
     super(props);
     this.state = {
       data: [],
+      error: false,
       loaded: false
     };
   }
@@ -22,21 +23,28 @@ class Chart extends React.Component<any, any> {
   public fetchData() {
     /* tslint:disable */
     console.log('gogogo');
-    fetch('http://localhost:3001')
+    fetch(`http://localhost:3001/?searchTerm=${this.props.searchTerm}`)
       .then(results => {
         return results.json();
       })
       .then(jsonResults => {
-        this.setState({
-          data: jsonResults,
-          loaded: true
-        });
+        jsonResults.message[0]['error'] === 'error'
+          ? this.setState({ error: true, loaded: false })
+          : this.setState({
+              data: jsonResults,
+              loaded: true
+            });
       });
     /* tslint:enable */
   }
 
-  public componentDidMount() {
-    this.fetchData();
+  public componentDidUpdate(prevProps: any) {
+    if (
+      this.props.searchTerm !== prevProps.searchTerm &&
+      this.props.searchTerm !== ''
+    ) {
+      this.fetchData();
+    }
   }
 
   public render() {
@@ -50,19 +58,29 @@ class Chart extends React.Component<any, any> {
         }}
       >
         <ResponsiveContainer>
-          <LineChart
-            width={450}
-            height={300}
-            data={this.state.data.message}
-            margin={{ top: 30, right: 60, left: 0, bottom: 0 }}
-          >
-            <XAxis dataKey="date" />
-            <YAxis />
-            <CartesianGrid strokeDasharray="2 2" />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-          </LineChart>
+          {this.state.loaded ? (
+            <LineChart
+              width={450}
+              height={300}
+              data={this.state.data.message}
+              margin={{ top: 30, right: 60, left: 0, bottom: 0 }}
+            >
+              <XAxis dataKey="date" />
+              <YAxis />
+              <CartesianGrid strokeDasharray="2 2" />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="linear"
+                dataKey="value"
+                dot={false}
+                stroke="#82ca9d"
+                strokeWidth={2.3}
+              />
+            </LineChart>
+          ) : (
+            <div />
+          )}
         </ResponsiveContainer>
       </div>
     );
