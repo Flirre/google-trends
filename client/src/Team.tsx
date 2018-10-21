@@ -90,7 +90,10 @@ class Team extends React.Component<any, any> {
           <React.Fragment>
             <div className="chart-container">
               <div className="chart">
-                <Chart searchTerm={this.state.searchTerm} />
+                <Chart
+                  searchTerm={this.state.searchTerm}
+                  color={this.props.color}
+                />
                 <div className="input">
                   <Input
                     action={

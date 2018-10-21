@@ -10,6 +10,11 @@ import {
   YAxis
 } from 'recharts';
 
+const colors = {
+  blue: '#0000ff',
+  red: '#ff0000'
+};
+
 class Chart extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
@@ -70,11 +75,12 @@ class Chart extends React.Component<any, any> {
               <CartesianGrid strokeDasharray="2 2" />
               <Tooltip />
               <Legend />
+
               <Line
                 type="linear"
-                dataKey="value"
+                dataKey={this.props.searchTerm}
                 dot={false}
-                stroke="#82ca9d"
+                stroke={this.props.color === 'red' ? colors.red : colors.blue}
                 strokeWidth={2.3}
               />
             </LineChart>
