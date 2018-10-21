@@ -52,18 +52,6 @@ class App extends React.Component<any, any> {
     this.setState({ fullscreen: !this.state.fullscreen });
   }
 
-  public componentDidMount() {
-    /* tslint:disable */
-    fetch('http://localhost:3001')
-      .then(results => {
-        return results.json();
-      })
-      .then(jsonResults => {
-        this.setState({ data: jsonResults });
-      });
-    /* tslint:enable */
-  }
-
   public render() {
     return this.state.fullscreen ? (
       this.state.red ? (
