@@ -12,12 +12,19 @@ enum Types {
 class Team extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
-
+    this.incrementScore = this.incrementScore.bind(this);
     this.state = {
       inputSearchTerm: '',
+      score: 0,
       searchTerm: '',
-      type: Types.Trend
+      type: Types.Point
     };
+  }
+
+  public incrementScore() {
+    this.setState((prevState: any, props: any) => ({
+      score: prevState.score + Math.floor(Math.random() * 100)
+    }));
   }
 
   public onInputChange = (e: any) => {
@@ -60,7 +67,7 @@ class Team extends React.Component<any, any> {
                     floated="right"
                     className={this.props.buttonColor}
                     content="Increment"
-                    onClick={this.props.increment}
+                    onClick={this.incrementScore}
                   />
                 </Grid.Column>
               </Grid.Row>
@@ -75,7 +82,7 @@ class Team extends React.Component<any, any> {
                     >
                       <h1>{this.props.teamName}</h1>
                     </div>
-                    <h2 className="shadowtext">{this.props.points} POINTS</h2>
+                    <h2 className="shadowtext">{this.state.score} POINTS</h2>
                   </div>
                 </Grid.Column>
                 <Grid.Column />
