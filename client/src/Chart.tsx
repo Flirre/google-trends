@@ -26,8 +26,8 @@ class Chart extends React.Component<any, any> {
   }
 
   public fetchData() {
+    this.setState({ loaded: false });
     /* tslint:disable */
-    console.log('gogogo');
     fetch(`http://localhost:3001/?searchTerm=${this.props.searchTerm}`)
       .then(results => {
         return results.json();
