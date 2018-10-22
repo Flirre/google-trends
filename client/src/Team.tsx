@@ -13,8 +13,10 @@ class Team extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.incrementScore = this.incrementScore.bind(this);
+    this.setName = this.setName.bind(this);
     this.state = {
       inputSearchTerm: '',
+      name: `Team ${this.props.color}`,
       score: 0,
       searchTerm: '',
       type: Types.Point
@@ -25,6 +27,10 @@ class Team extends React.Component<any, any> {
     this.setState((prevState: any, props: any) => ({
       score: prevState.score + Math.floor(Math.random() * 100)
     }));
+  }
+
+  public setName(newName: string) {
+    this.setState({ name: newName });
   }
 
   public onInputChange = (e: any) => {
@@ -80,7 +86,9 @@ class Team extends React.Component<any, any> {
                         this.props.fullscreen ? 'team-fullscreen' : 'team'
                       }`}
                     >
-                      <h1>{this.props.teamName}</h1>
+                      <h1 className="teamName">
+                        {this.state.name.toUpperCase()}
+                      </h1>
                     </div>
                     <h2 className="shadowtext">{this.state.score} POINTS</h2>
                   </div>
