@@ -24,6 +24,12 @@ class Team extends React.Component<any, any> {
     this.setState({ inputSearchTerm: e.target.value });
   };
 
+  public keyPress = (e: any) => {
+    if (e.keyCode === 13) {
+      this.setState({ searchTerm: this.state.inputSearchTerm });
+    }
+  };
+
   public updateSearchTerm = (e: any) => {
     this.setState({ searchTerm: this.state.inputSearchTerm });
   };
@@ -101,6 +107,7 @@ class Team extends React.Component<any, any> {
                     }
                     placeholder="Enter a search term"
                     onChange={this.onInputChange}
+                    onKeyDown={this.keyPress}
                   />
                 </div>
               </div>
