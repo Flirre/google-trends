@@ -50,9 +50,7 @@ class Team extends React.Component<any, any> {
   public render() {
     const isPoint = this.state.type === Types.Point;
     return (
-      <div
-        className={`${this.props.color} ${this.props.className || 'shared'}`}
-      >
+      <div className={`${this.props.color} player ${this.props.className}`}>
         {isPoint ? (
           <React.Fragment>
             <Grid rows={3} columns={3} textAlign="center">
@@ -80,17 +78,13 @@ class Team extends React.Component<any, any> {
               <Grid.Row verticalAlign="middle">
                 <Grid.Column />
                 <Grid.Column textAlign="center">
-                  <div className="content">
-                    <div
-                      className={`shadow ${
-                        this.props.fullscreen ? 'team-fullscreen' : 'team'
-                      }`}
-                    >
+                  <div>
+                    <div>
                       <h1 className="teamName">
                         {this.state.name.toUpperCase()}
                       </h1>
                     </div>
-                    <h2 className="shadowtext">{this.state.score} POINTS</h2>
+                    <h2>{this.state.score} POINTS</h2>
                   </div>
                 </Grid.Column>
                 <Grid.Column />
@@ -98,12 +92,11 @@ class Team extends React.Component<any, any> {
               <Grid.Row verticalAlign="bottom" />
             </Grid>
             <Button
-              id="fullscreen"
+              className="fullscreen-toggle"
               fluid={true}
               color="grey"
               size="mini"
               content="Fullscreen toggle"
-              attached="bottom"
               onClick={this.props.fullscreenToggle}
             />
           </React.Fragment>
