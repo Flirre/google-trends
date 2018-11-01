@@ -15,7 +15,10 @@ class Team extends React.Component<any, any> {
     this.incrementScore = this.incrementScore.bind(this);
     this.setName = this.setName.bind(this);
     this.state = {
+      data: [],
+      error: false,
       inputSearchTerm: '',
+      loaded: false,
       name: `Team ${this.props.color}`,
       score: 0,
       searchTerm: '',
@@ -44,8 +47,35 @@ class Team extends React.Component<any, any> {
   };
 
   public updateSearchTerm = (e: any) => {
-    this.setState({ searchTerm: this.state.inputSearchTerm });
+    this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
+      this.fetchData();
+    });
   };
+
+  public fetchData() {
+    this.setState({ loaded: false });
+    /* tslint:disable */
+    console.log('gogo');
+    fetch(`http://localhost:3001/?searchTerm=${this.state.searchTerm}`)
+      .then(results => {
+        return results.json();
+      })
+      .then(jsonResults => {
+        jsonResults.message[0]['error'] === 'error'
+          ? this.setState({ error: true, loaded: false })
+          : this.setState((prevState: any) => ({
+              data: jsonResults,
+              error: false,
+              loaded: true,
+              score:
+                prevState.score +
+                jsonResults.message[jsonResults.message.length - 1][
+                  this.state.searchTerm
+                ]
+            }));
+      });
+    /* tslint:enable */
+  }
 
   public render() {
     const isPoint = this.state.type === Types.Point;
@@ -105,8 +135,10 @@ class Team extends React.Component<any, any> {
             <div className="chart-container">
               <div className="chart">
                 <Chart
+                  data={this.state.data}
                   searchTerm={this.state.searchTerm}
                   color={this.props.color}
+                  loaded={this.state.loaded}
                 />
                 <div className="input">
                   <Input

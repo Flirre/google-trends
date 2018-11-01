@@ -18,38 +18,6 @@ const colors = {
 class Chart extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      data: [],
-      error: false,
-      loaded: false
-    };
-  }
-
-  public fetchData() {
-    this.setState({ loaded: false });
-    /* tslint:disable */
-    fetch(`http://localhost:3001/?searchTerm=${this.props.searchTerm}`)
-      .then(results => {
-        return results.json();
-      })
-      .then(jsonResults => {
-        jsonResults.message[0]['error'] === 'error'
-          ? this.setState({ error: true, loaded: false })
-          : this.setState({
-              data: jsonResults,
-              loaded: true
-            });
-      });
-    /* tslint:enable */
-  }
-
-  public componentDidUpdate(prevProps: any) {
-    if (
-      this.props.searchTerm !== prevProps.searchTerm &&
-      this.props.searchTerm !== ''
-    ) {
-      this.fetchData();
-    }
   }
 
   public render() {
@@ -63,11 +31,11 @@ class Chart extends React.Component<any, any> {
         }}
       >
         <ResponsiveContainer>
-          {this.state.loaded ? (
+          {this.props.loaded ? (
             <LineChart
               width={450}
               height={300}
-              data={this.state.data.message}
+              data={this.props.data.message}
               margin={{ top: 30, right: 60, left: 0, bottom: 0 }}
             >
               <XAxis dataKey="date" />
