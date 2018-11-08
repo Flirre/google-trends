@@ -58,6 +58,25 @@ h2 {
   font-size: 4em;
 }
 
+.round {
+  position: absolute;
+  top: 50px;
+  text-align: center;
+  width: 100%;
+}
+
+.next {
+  position: absolute;
+  top: 40%;
+  right: 20px;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-size: 4em !important;
+}
+
 /* Chart */
 .chart-container {
   height: 100vh;

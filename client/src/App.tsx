@@ -8,9 +8,12 @@ class App extends React.Component<any, any> {
     super(props);
     this.switch = this.switch.bind(this);
     this.fullscreenToggle = this.fullscreenToggle.bind(this);
+    this.nextRound = this.nextRound.bind(this);
     this.state = {
       fullscreen: false,
-      red: true
+      ready: 0,
+      red: true,
+      round: 0
     };
   }
 
@@ -20,6 +23,19 @@ class App extends React.Component<any, any> {
 
   public fullscreenToggle() {
     this.setState({ fullscreen: !this.state.fullscreen });
+  }
+
+  public nextRound() {
+    if (this.state.ready < 1) {
+      this.setState((prevState: any) => ({
+        ready: prevState.ready + 1
+      }));
+    } else {
+      this.setState((prevState: any) => ({
+        ready: 0,
+        round: prevState.round + 1
+      }));
+    }
   }
 
   public render() {
@@ -36,6 +52,8 @@ class App extends React.Component<any, any> {
           switch={this.switch}
           fullscreen={this.state.fullscreen}
           fullscreenToggle={this.fullscreenToggle}
+          round={this.state.round}
+          nextRound={this.nextRound}
         />
         <Team
           className={
@@ -48,6 +66,8 @@ class App extends React.Component<any, any> {
           switch={this.switch}
           fullscreen={this.state.fullscreen}
           fullscreenToggle={this.fullscreenToggle}
+          round={this.state.round}
+          nextRound={this.nextRound}
         />
       </div>
     );

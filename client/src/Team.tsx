@@ -10,16 +10,29 @@ enum Types {
 }
 
 class Team extends React.Component<any, any> {
+  public static getDerivedStateFromProps(nextProps: any, prevState: any) {
+    if (nextProps.round > prevState.prevProps.round) {
+      return {
+        prevProps: nextProps,
+        ready: false
+      };
+    }
+    return null;
+  }
+
   constructor(props: any) {
     super(props);
     this.incrementScore = this.incrementScore.bind(this);
     this.setName = this.setName.bind(this);
+    this.signalReady = this.signalReady.bind(this);
     this.state = {
       data: [],
       error: false,
       inputSearchTerm: '',
       loaded: false,
       name: `Team ${this.props.color}`,
+      prevProps: props,
+      ready: false,
       score: 0,
       searchTerm: '',
       type: Types.Search
@@ -52,16 +65,21 @@ class Team extends React.Component<any, any> {
     });
   };
 
+  public signalReady() {
+    if (!this.state.ready) {
+      this.props.nextRound();
+      this.setState({ ready: true });
+    }
+  }
+
   public fetchData() {
     this.setState({ loaded: false });
-    /* tslint:disable */
-    console.log('gogo');
     fetch(`http://localhost:3001/?searchTerm=${this.state.searchTerm}`)
       .then(results => {
         return results.json();
       })
       .then(jsonResults => {
-        jsonResults.message[0]['error'] === 'error'
+        jsonResults.message[0].error === 'error'
           ? this.setState({ error: true, loaded: false })
           : this.setState((prevState: any) => ({
               data: jsonResults,
@@ -74,13 +92,14 @@ class Team extends React.Component<any, any> {
                 ]
             }));
       });
-    /* tslint:enable */
   }
 
   public render() {
     const isPoint = this.state.type === Types.Point;
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
+        <h2 className="round">TERM {this.props.round}</h2>
+        <Button className="next" onClick={this.signalReady} content=">" />
         {isPoint ? (
           <React.Fragment>
             <Grid rows={3} columns={3} textAlign="center">
