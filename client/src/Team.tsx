@@ -24,6 +24,7 @@ class Team extends React.Component<any, any> {
     super(props);
     this.incrementScore = this.incrementScore.bind(this);
     this.setName = this.setName.bind(this);
+    this.updateType = this.updateType.bind(this);
     this.signalReady = this.signalReady.bind(this);
     this.state = {
       data: [],
@@ -37,6 +38,12 @@ class Team extends React.Component<any, any> {
       searchTerm: '',
       type: Types.Search
     };
+  }
+
+  public componentDidUpdate(prevProps: any) {
+    if (this.state.prevProps.round > prevProps.round) {
+      this.updateType();
+    }
   }
 
   public incrementScore() {
@@ -55,13 +62,17 @@ class Team extends React.Component<any, any> {
 
   public keyPress = (e: any) => {
     if (e.keyCode === 13) {
-      this.setState({ searchTerm: this.state.inputSearchTerm });
+      this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
+        this.fetchData();
+        this.signalReady();
+      });
     }
   };
 
   public updateSearchTerm = () => {
     this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
       this.fetchData();
+      this.signalReady();
     });
   };
 
@@ -112,7 +123,12 @@ class Team extends React.Component<any, any> {
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
         <h2 className="round">TERM {this.props.round}</h2>
-        <Button className="next" onClick={this.updateType} content=">" />
+        <Button
+          className="next"
+          disabled={this.state.ready}
+          onClick={this.signalReady}
+          content=">"
+        />
         {this.state.type === Types.Point ? (
           <React.Fragment>
             <Grid rows={3} columns={3} textAlign="center">
@@ -169,7 +185,11 @@ class Team extends React.Component<any, any> {
               <div className="input">
                 <Input
                   action={
-                    <Button icon="search" onClick={this.updateSearchTerm} />
+                    <Button
+                      icon="search"
+                      disabled={this.state.ready}
+                      onClick={this.updateSearchTerm}
+                    />
                   }
                   placeholder="Enter a search term"
                   onChange={this.onInputChange}
@@ -197,16 +217,6 @@ class Team extends React.Component<any, any> {
                   color={this.props.color}
                   loaded={this.state.loaded}
                 />
-                <div className="input">
-                  <Input
-                    action={
-                      <Button icon="search" onClick={this.updateSearchTerm} />
-                    }
-                    placeholder="Enter a search term"
-                    onChange={this.onInputChange}
-                    onKeyDown={this.keyPress}
-                  />
-                </div>
               </div>
             </div>
             <Button
