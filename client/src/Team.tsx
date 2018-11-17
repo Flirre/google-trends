@@ -40,7 +40,7 @@ class Team extends React.Component<any, any> {
   }
 
   public incrementScore() {
-    this.setState((prevState: any, props: any) => ({
+    this.setState((prevState: any) => ({
       score: prevState.score + Math.floor(Math.random() * 100)
     }));
   }
@@ -59,10 +59,24 @@ class Team extends React.Component<any, any> {
     }
   };
 
-  public updateSearchTerm = (e: any) => {
+  public updateSearchTerm = () => {
     this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
       this.fetchData();
     });
+  };
+
+  public updateType = () => {
+    switch (this.state.type) {
+      case Types.Search:
+        this.setState({ type: Types.Trend });
+        break;
+      case Types.Trend:
+        this.setState({ type: Types.Point });
+        break;
+      case Types.Point:
+        this.setState({ type: Types.Search });
+        break;
+    }
   };
 
   public signalReady() {
@@ -99,7 +113,7 @@ class Team extends React.Component<any, any> {
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
         <h2 className="round">TERM {this.props.round}</h2>
-        <Button className="next" onClick={this.signalReady} content=">" />
+        <Button className="next" onClick={this.updateType} content=">" />
         {isPoint ? (
           <React.Fragment>
             <Grid rows={3} columns={3} textAlign="center">

@@ -75,6 +75,7 @@ h2 {
   border: none !important;
   color: white !important;
   font-size: 4em !important;
+  z-index: 1000;
 }
 
 /* Chart */
