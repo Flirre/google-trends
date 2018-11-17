@@ -109,12 +109,11 @@ class Team extends React.Component<any, any> {
   }
 
   public render() {
-    const isPoint = this.state.type === Types.Point;
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
         <h2 className="round">TERM {this.props.round}</h2>
         <Button className="next" onClick={this.updateType} content=">" />
-        {isPoint ? (
+        {this.state.type === Types.Point ? (
           <React.Fragment>
             <Grid rows={3} columns={3} textAlign="center">
               <Grid.Row verticalAlign="top">
@@ -163,7 +162,32 @@ class Team extends React.Component<any, any> {
               onClick={this.props.fullscreenToggle}
             />
           </React.Fragment>
-        ) : (
+        ) : null}
+        {this.state.type === Types.Search ? (
+          <React.Fragment>
+            <div className="chart-container">
+              <div className="input">
+                <Input
+                  action={
+                    <Button icon="search" onClick={this.updateSearchTerm} />
+                  }
+                  placeholder="Enter a search term"
+                  onChange={this.onInputChange}
+                  onKeyDown={this.keyPress}
+                />
+              </div>
+            </div>
+            <Button
+              className="fullscreen-toggle"
+              fluid={true}
+              color="grey"
+              size="mini"
+              content="Fullscreen toggle"
+              onClick={this.props.fullscreenToggle}
+            />
+          </React.Fragment>
+        ) : null}
+        {this.state.type === Types.Trend ? (
           <React.Fragment>
             <div className="chart-container">
               <div className="chart">
@@ -194,7 +218,7 @@ class Team extends React.Component<any, any> {
               onClick={this.props.fullscreenToggle}
             />
           </React.Fragment>
-        )}
+        ) : null}
       </div>
     );
   }
