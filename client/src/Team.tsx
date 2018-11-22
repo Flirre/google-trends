@@ -11,10 +11,21 @@ enum Types {
 
 class Team extends React.Component<any, any> {
   public static getDerivedStateFromProps(nextProps: any, prevState: any) {
-    if (nextProps.type !== prevState.prevProps.type) {
+    if (
+      nextProps.type !== prevState.prevProps.type &&
+      nextProps.round === prevState.prevProps.round
+    ) {
       return {
         prevProps: nextProps,
         ready: false
+      };
+    } else if (nextProps.round > prevState.prevProps.round) {
+      return {
+        data: [],
+        inputSearchTerm: '',
+        prevProps: nextProps,
+        ready: false,
+        searchTerm: ''
       };
     }
     return null;
