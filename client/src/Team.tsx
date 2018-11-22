@@ -11,7 +11,7 @@ enum Types {
 
 class Team extends React.Component<any, any> {
   public static getDerivedStateFromProps(nextProps: any, prevState: any) {
-    if (nextProps.round > prevState.prevProps.round) {
+    if (nextProps.type !== prevState.prevProps.type) {
       return {
         prevProps: nextProps,
         ready: false
@@ -24,7 +24,6 @@ class Team extends React.Component<any, any> {
     super(props);
     this.incrementScore = this.incrementScore.bind(this);
     this.setName = this.setName.bind(this);
-    this.updateType = this.updateType.bind(this);
     this.signalReady = this.signalReady.bind(this);
     this.state = {
       data: [],
@@ -35,15 +34,8 @@ class Team extends React.Component<any, any> {
       prevProps: props,
       ready: false,
       score: 0,
-      searchTerm: '',
-      type: Types.Search
+      searchTerm: ''
     };
-  }
-
-  public componentDidUpdate(prevProps: any) {
-    if (this.state.prevProps.round > prevProps.round) {
-      this.updateType();
-    }
   }
 
   public incrementScore() {
@@ -76,22 +68,8 @@ class Team extends React.Component<any, any> {
     });
   };
 
-  public updateType = () => {
-    switch (this.state.type) {
-      case Types.Search:
-        this.setState({ type: Types.Trend });
-        break;
-      case Types.Trend:
-        this.setState({ type: Types.Point });
-        break;
-      case Types.Point:
-        this.setState({ type: Types.Search });
-        break;
-    }
-  };
-
   public signalReady() {
-    if (this.state.type === Types.Search && this.state.searchTerm === '') {
+    if (this.props.type === Types.Search && this.state.searchTerm === '') {
       return;
     }
     if (!this.state.ready) {
@@ -132,7 +110,7 @@ class Team extends React.Component<any, any> {
           onClick={this.signalReady}
           content=">"
         />
-        {this.state.type === Types.Point ? (
+        {this.props.type === Types.Point ? (
           <React.Fragment>
             <Grid rows={3} columns={3} textAlign="center">
               <Grid.Row verticalAlign="top">
@@ -182,7 +160,7 @@ class Team extends React.Component<any, any> {
             />
           </React.Fragment>
         ) : null}
-        {this.state.type === Types.Search ? (
+        {this.props.type === Types.Search ? (
           <React.Fragment>
             <div className="chart-container">
               <div className="input">
@@ -210,7 +188,7 @@ class Team extends React.Component<any, any> {
             />
           </React.Fragment>
         ) : null}
-        {this.state.type === Types.Trend ? (
+        {this.props.type === Types.Trend ? (
           <React.Fragment>
             <div className="chart-container">
               <div className="chart">
