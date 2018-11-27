@@ -91,7 +91,7 @@ class Team extends React.Component<any, any> {
 
   public fetchData() {
     this.setState({ loaded: false });
-    fetch(`http://localhost:3001/?searchTerm=${this.state.searchTerm}`)
+    fetch(`http://localhost:3001/trend/?searchTerm=${this.state.searchTerm}`)
       .then(results => {
         return results.json();
       })
@@ -114,7 +114,7 @@ class Team extends React.Component<any, any> {
   public render() {
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
-        <h2 className="round">TERM {this.props.round}</h2>
+        <h2 className="round">TERM {this.props.term}</h2>
         <Button
           className="next"
           disabled={this.state.ready}

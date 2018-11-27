@@ -21,8 +21,19 @@ class App extends React.Component<any, any> {
       ready: 0,
       red: true,
       round: 0,
+      term: '',
       type: Types.Point
     };
+  }
+
+  public componentWillMount() {
+    fetch(`http://localhost:3001/term`)
+      .then(resTerm => {
+        return resTerm.json();
+      })
+      .then(jsonTerm => {
+        this.setState({ term: jsonTerm.term });
+      });
   }
 
   public switch() {
@@ -80,6 +91,7 @@ class App extends React.Component<any, any> {
           fullscreenToggle={this.fullscreenToggle}
           round={this.state.round}
           type={this.state.type}
+          term={this.state.term}
           nextRound={this.nextRound}
         />
         <Team
@@ -95,6 +107,7 @@ class App extends React.Component<any, any> {
           fullscreenToggle={this.fullscreenToggle}
           round={this.state.round}
           type={this.state.type}
+          term={this.state.term}
           nextRound={this.nextRound}
         />
       </div>
