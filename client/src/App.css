@@ -3,12 +3,16 @@ body {
 }
 
 .container {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
+  display: flex;
+  height: 100vh;
+  width: 100vw;
   color: white;
+}
+
+.player {
+  position: relative;
+  width: 50%;
+  height: 100%;
 }
 
 .red {
@@ -19,60 +23,31 @@ body {
   background-color: #4285f4 !important;
 }
 
-.team {
-  color: #2a2a2a;
-  background-color: #fbbc05;
+.full-width {
+  width: 100vw;
+}
+
+.half-width {
   width: 50vw;
-  position: relative;
-  left: calc(-25vw + 50%);
 }
 
-.team-fullscreen {
-  color: #2a2a2a;
-  background-color: #fbbc05;
-  width: 100vw;
-  position: relative;
-  left: calc(-50vw + 50%);
+.hidden {
+  display: none;
 }
 
-.shadow {
-  box-shadow: 0 0.5em 0 0.025em rgba(0, 0, 0, 0.15);
+.visible {
+  display: visible;
 }
 
-.shadowtext {
-  text-shadow: 0 0.06em 0 rgba(0, 0, 0, 0.15);
-  width: 100vw;
-  position: relative;
-  left: calc(-50vw + 50%);
-}
-
-.no-pad {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  padding-bottom: 0 !important;
-  height: 100% !important;
-  margin-bottom: 2em;
-}
-
-.ui.grid {
-  margin-left: 0;
-  margin-right: 0;
-}
-
-.button {
+button {
   border-radius: 0 !important;
-  margin-left: -1rem !important;
-  margin-right: -1rem !important;
+  margin: 0;
 }
 
-.shared {
-  height: 100%;
-
-  /* padding-bottom: 2em; */
-}
-
-.grid {
-  height: 100%;
+.fullscreen-toggle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
 
 h1 {
@@ -81,18 +56,29 @@ h1 {
 
 h2 {
   font-size: 4em;
-  line-height: 0.9;
 }
 
-#fullscreen {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+.round {
+  position: absolute;
+  top: 50px;
+  text-align: center;
+  width: 100%;
 }
 
+.next {
+  position: absolute;
+  top: 40%;
+  right: 20px;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-size: 4em !important;
+  z-index: 1000;
+}
+
+/* Chart */
 .chart-container {
   height: 100vh;
   display: flex;
@@ -109,4 +95,9 @@ h2 {
   justify-content: center;
   min-width: 33%;
   margin-top: 1vh;
+}
+
+/*  Semantic */
+.ui.grid {
+  height: inherit;
 }

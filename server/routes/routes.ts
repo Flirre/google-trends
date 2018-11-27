@@ -13,7 +13,7 @@ export class Routes {
     });
   }
 
-  private getTrendData(searchTerm: String): any {
+  private getTrendData(searchTerm: string): any {
     let trendData: any = [];
     const trendPromise = googleTrends
       .interestOverTime({ keyword: searchTerm })
@@ -25,7 +25,7 @@ export class Routes {
         formattedResults.forEach(function(data: any) {
           trendData.push({
             date: data['formattedTime'].substring(0, 3),
-            value: data['value'][0]
+            [searchTerm]: data['value'][0]
           });
         });
         return trendData;

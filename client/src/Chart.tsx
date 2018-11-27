@@ -10,41 +10,14 @@ import {
   YAxis
 } from 'recharts';
 
+const colors = {
+  blue: '#0000ff',
+  red: '#ff0000'
+};
+
 class Chart extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      data: [],
-      error: false,
-      loaded: false
-    };
-  }
-
-  public fetchData() {
-    /* tslint:disable */
-    console.log('gogogo');
-    fetch(`http://localhost:3001/?searchTerm=${this.props.searchTerm}`)
-      .then(results => {
-        return results.json();
-      })
-      .then(jsonResults => {
-        jsonResults.message[0]['error'] === 'error'
-          ? this.setState({ error: true, loaded: false })
-          : this.setState({
-              data: jsonResults,
-              loaded: true
-            });
-      });
-    /* tslint:enable */
-  }
-
-  public componentDidUpdate(prevProps: any) {
-    if (
-      this.props.searchTerm !== prevProps.searchTerm &&
-      this.props.searchTerm !== ''
-    ) {
-      this.fetchData();
-    }
   }
 
   public render() {
@@ -58,11 +31,11 @@ class Chart extends React.Component<any, any> {
         }}
       >
         <ResponsiveContainer>
-          {this.state.loaded ? (
+          {this.props.loaded ? (
             <LineChart
               width={450}
               height={300}
-              data={this.state.data.message}
+              data={this.props.data.message}
               margin={{ top: 30, right: 60, left: 0, bottom: 0 }}
             >
               <XAxis dataKey="date" />
@@ -70,11 +43,12 @@ class Chart extends React.Component<any, any> {
               <CartesianGrid strokeDasharray="2 2" />
               <Tooltip />
               <Legend />
+
               <Line
                 type="linear"
-                dataKey="value"
+                dataKey={this.props.searchTerm}
                 dot={false}
-                stroke="#82ca9d"
+                stroke={this.props.color === 'red' ? colors.red : colors.blue}
                 strokeWidth={2.3}
               />
             </LineChart>

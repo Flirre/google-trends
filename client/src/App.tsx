@@ -1,26 +1,27 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Button, Grid } from 'semantic-ui-react';
 import './App.css';
 import Team from './Team';
+
+enum Types {
+  Point,
+  Search,
+  Trend
+}
 
 class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.switch = this.switch.bind(this);
-    this.incrementTeam1 = this.incrementTeam1.bind(this);
-    this.incrementTeam2 = this.incrementTeam2.bind(this);
-    this.setTeam1Name = this.setTeam1Name.bind(this);
-    this.setTeam2Name = this.setTeam2Name.bind(this);
     this.fullscreenToggle = this.fullscreenToggle.bind(this);
+    this.nextRound = this.nextRound.bind(this);
+    this.updateType = this.updateType.bind(this);
     this.state = {
-      data: null,
       fullscreen: false,
+      ready: 0,
       red: true,
-      team1Name: '1',
-      team1Points: 0,
-      team2Name: '2',
-      team2Points: 0
+      round: 0,
+      type: Types.Point
     };
   }
 
@@ -28,90 +29,73 @@ class App extends React.Component<any, any> {
     this.setState({ red: !this.state.red });
   }
 
-  public incrementTeam1() {
-    this.setState((prevState: any, props: any) => ({
-      team1Points: prevState.team1Points + Math.floor(Math.random() * 100)
-    }));
-  }
-
-  public incrementTeam2() {
-    this.setState((prevState: any, props: any) => ({
-      team2Points: prevState.team2Points + Math.floor(Math.random() * 100)
-    }));
-  }
-
-  public setTeam1Name(name: string) {
-    this.setState({ team1Name: name });
-  }
-
-  public setTeam2Name(name: string) {
-    this.setState({ team2Name: name });
-  }
-
   public fullscreenToggle() {
     this.setState({ fullscreen: !this.state.fullscreen });
   }
 
+  public updateType = () => {
+    switch (this.state.type) {
+      case Types.Search:
+        this.setState({ ready: 0, type: Types.Trend });
+        break;
+      case Types.Trend:
+        this.setState((prevState: any) => ({
+          ready: 0,
+          round: prevState.round + 1,
+          type: Types.Point
+        }));
+        break;
+      case Types.Point:
+        this.setState({
+          ready: 0,
+          type: Types.Search
+        });
+        break;
+    }
+  };
+
+  public nextRound() {
+    if (this.state.ready < 1) {
+      this.setState((prevState: any) => ({
+        ready: prevState.ready + 1
+      }));
+    } else {
+      this.updateType();
+    }
+  }
+
   public render() {
-    return this.state.fullscreen ? (
-      this.state.red ? (
+    return (
+      <div className="container">
         <Team
-          className="container"
+          className={
+            this.state.fullscreen
+              ? 'full-width ' + (this.state.red ? 'visible' : 'hidden')
+              : 'half-width'
+          }
           color="red"
           buttonColor="blue"
-          teamName={'TEAM ' + this.state.team1Name.toUpperCase()}
           switch={this.switch}
-          points={this.state.team1Points}
-          increment={this.incrementTeam1}
           fullscreen={this.state.fullscreen}
           fullscreenToggle={this.fullscreenToggle}
+          round={this.state.round}
+          type={this.state.type}
+          nextRound={this.nextRound}
         />
-      ) : (
         <Team
-          className="container"
+          className={
+            this.state.fullscreen
+              ? 'full-width ' + (!this.state.red ? 'visible' : 'hidden')
+              : 'half-width'
+          }
           color="blue"
           buttonColor="red"
-          teamName={'TEAM ' + this.state.team2Name.toUpperCase()}
           switch={this.switch}
-          points={this.state.team2Points}
-          increment={this.incrementTeam2}
           fullscreen={this.state.fullscreen}
           fullscreenToggle={this.fullscreenToggle}
-        />
-      )
-    ) : (
-      <div className="container">
-        <Grid columns={2}>
-          <Grid.Column className="no-pad">
-            <Team
-              color="red"
-              buttonColor="blue"
-              teamName={'TEAM ' + this.state.team1Name.toUpperCase()}
-              switch={this.switch}
-              points={this.state.team1Points}
-              increment={this.incrementTeam1}
-            />
-          </Grid.Column>
-
-          <Grid.Column className="no-pad">
-            <Team
-              color="blue"
-              buttonColor="red"
-              teamName={'TEAM ' + this.state.team2Name.toUpperCase()}
-              switch={this.switch}
-              points={this.state.team2Points}
-              increment={this.incrementTeam2}
-            />
-          </Grid.Column>
-        </Grid>
-        <Button
-          id="fullscreen"
-          fluid={true}
-          color="grey"
-          size="mini"
-          content="Fullscreen toggle"
-          attached="bottom"
-          onClick={this.fullscreenToggle}
+          round={this.state.round}
+          type={this.state.type}
+          nextRound={this.nextRound}
         />
       </div>
     );
