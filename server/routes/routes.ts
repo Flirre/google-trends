@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Application } from 'express-serve-static-core';
 import * as googleTrends from 'google-trends-api';
 
+const possibleTerms: string[] = ['Christmas', 'Easter', 'Thanksgiving'];
 let trendTerm: string;
 
 export class Routes {
@@ -57,6 +58,6 @@ export class Routes {
   }
 
   private setTrendTerm(): void {
-    trendTerm = 'Christmas';
+    trendTerm = possibleTerms[Math.floor(Math.random() * possibleTerms.length)];
   }
 }
