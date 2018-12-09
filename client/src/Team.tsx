@@ -1,6 +1,5 @@
 import * as React from 'react';
-import 'semantic-ui-css/semantic.min.css';
-import { Button, Grid, Input } from 'semantic-ui-react';
+import { Button, Input } from 'semantic-ui-react';
 import Chart from './Chart';
 
 enum Types {
@@ -47,6 +46,16 @@ class Team extends React.Component<any, any> {
       score: 0,
       searchTerm: ''
     };
+  }
+
+  public componentDidUpdate(prevProps: any, prevState: any) {
+    if (
+      prevProps !== this.props &&
+      this.props.round === 1 &&
+      this.state.name === `Team ${this.props.color}`
+    ) {
+      this.setName(`Team ${prevProps.term} ${prevState.searchTerm}`);
+    }
   }
 
   public incrementScore() {
@@ -123,52 +132,39 @@ class Team extends React.Component<any, any> {
         />
         {this.props.type === Types.Point ? (
           <React.Fragment>
-            <Grid rows={3} columns={3} textAlign="center">
-              <Grid.Row verticalAlign="top">
-                <Grid.Column>
-                  <Button
-                    size="mini"
-                    floated="left"
-                    className={this.props.buttonColor}
-                    content="Switch"
-                    onClick={this.props.switch}
-                  />
-                </Grid.Column>
-                <Grid.Column />
-                <Grid.Column>
-                  <Button
-                    size="mini"
-                    floated="right"
-                    className={this.props.buttonColor}
-                    content="Increment"
-                    onClick={this.incrementScore}
-                  />
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row verticalAlign="middle">
-                <Grid.Column />
-                <Grid.Column textAlign="center">
-                  <div>
-                    <div>
-                      <h1 className="teamName">
-                        {this.state.name.toUpperCase()}
-                      </h1>
-                    </div>
-                    <h2>{this.state.score} POINTS</h2>
-                  </div>
-                </Grid.Column>
-                <Grid.Column />
-              </Grid.Row>
-              <Grid.Row verticalAlign="bottom" />
-            </Grid>
-            <Button
-              className="fullscreen-toggle"
-              fluid={true}
-              color="grey"
-              size="mini"
-              content="Fullscreen toggle"
-              onClick={this.props.fullscreenToggle}
-            />
+            <div className="teamContainer">
+              <div className="top left">
+                <Button
+                  size="mini"
+                  floated="left"
+                  className={this.props.buttonColor}
+                  content="Switch"
+                  onClick={this.props.switch}
+                />
+              </div>
+              <div className="top right">
+                <Button
+                  size="mini"
+                  floated="right"
+                  className={this.props.buttonColor}
+                  content="Increment"
+                  onClick={this.incrementScore}
+                />
+              </div>
+              <div className="middle center">
+                <h1 className="teamName">{this.state.name.toUpperCase()}</h1>
+
+                <h2>{this.state.score} POINTS</h2>
+              </div>
+              <Button
+                className="fullscreen-toggle"
+                fluid={true}
+                color="grey"
+                size="mini"
+                content="Fullscreen toggle"
+                onClick={this.props.fullscreenToggle}
+              />
+            </div>
           </React.Fragment>
         ) : null}
         {this.props.type === Types.Search ? (
