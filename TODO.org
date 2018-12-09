@@ -1,0 +1,6 @@
+* Client
++Set name after round 0.
++No point count during name round.
+
+* Server
++Individual sessions
