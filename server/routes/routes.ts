@@ -2,7 +2,13 @@ import { Request, Response } from 'express';
 import { Application } from 'express-serve-static-core';
 import * as googleTrends from 'google-trends-api';
 
-const possibleTerms: string[] = ['Christmas', 'Easter', 'Thanksgiving'];
+const possibleTerms: string[] = [
+  'Christmas',
+  'Easter',
+  'Thanksgiving',
+  'Summer',
+  'Winter'
+];
 let trendTerm: string;
 
 export class Routes {
