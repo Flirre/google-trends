@@ -125,12 +125,14 @@ class Team extends React.Component<any, any> {
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
         <h2 className="round">TERM {this.props.term}</h2>
-        <Button
-          className="next"
-          disabled={this.state.ready}
-          onClick={this.signalReady}
-          content=">"
-        />
+        {!(this.props.type === Types.Search) ? (
+          <Button
+            className="next"
+            disabled={this.state.ready}
+            onClick={this.signalReady}
+            content=">"
+          />
+        ) : null}
         {this.props.type === Types.Point ? (
           <React.Fragment>
             <div className="teamContainer">
