@@ -55,6 +55,7 @@ class Team extends React.Component<any, any> {
       this.state.name === `Team ${this.props.color}`
     ) {
       this.setName(`Team ${prevProps.term} ${prevState.searchTerm}`);
+      this.setState({ score: 0 });
     }
   }
 
