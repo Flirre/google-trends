@@ -9,45 +9,70 @@ const possibleTerms: string[] = [
   'Summer',
   'Winter'
 ];
+const points: any = { team1: 0, team2: 0 };
 let trendTerm: string;
+const searchTerms: any = {};
 
 export class Routes {
   public routes(app: Application): void {
     app.route('/trend').get(async (req: Request, res: Response) => {
-      this.getTrendData(req.query.searchTerm).then((trendData: any) => {
+      this.getTrendData().then((trendData: any) => {
         res.status(200).send({
           message: trendData
         });
       });
     });
 
-    app.route('/term').get(async (req: Request, res: Response) => {
-      this.setTrendTerm();
-      res.status(200).send({
-        term: trendTerm.toUpperCase()
+    app
+      .route('/term')
+      .get(async (req: Request, res: Response) => {
+        this.setTrendTerm();
+        res.status(200).send({
+          term: trendTerm.toUpperCase()
+        });
+      })
+      .post(async (req: Request, res: Response) => {
+        this.addTrendTerm(req.query.searchTerm, req.query.team);
+        res
+          .status(200)
+          .send(
+            `Succesfully posted ${req.query.searchTerm}. Result: term - ${
+              searchTerms[req.query.team]
+            }.\n terms=${JSON.stringify(searchTerms)}`
+          );
       });
-    });
+  }
+  private addTrendTerm(searchTerm: string, team: string): void {
+    searchTerms[team] = searchTerm;
+    return;
   }
 
-  private getTrendData(searchTerm: string): any {
+  private getTrendData(): any {
     const trendData: any = [];
+    const { team1: term1, team2: term2 } = searchTerms;
     const trendPromise = googleTrends
-      .interestOverTime({ keyword: `${trendTerm} ${searchTerm}` })
+      .interestOverTime({
+        keyword: [`${trendTerm} ${term1}`, `${trendTerm} ${term2}`]
+      })
       .then((results: any) => {
         const JSONresults = JSON.parse(results);
         const formattedResults = JSONresults.default.timelineData.slice(-12);
         formattedResults.forEach((data: any) => {
           trendData.push({
-            date: data.formattedTime.substring(0, 3),
-            [searchTerm]: data.value[0]
+            date: data.formattedTime,
+            team1: { points: data.value[0], term: term1 },
+            team2: { points: data.value[1], term: term2 }
           });
         });
-        // generate 0 data if no trend is found
+        points.team1 += formattedResults[11].value[0];
+        points.team2 += formattedResults[11].value[1];
+        // generate empty data if both terms fail and no trend is found
         if (trendData.length < 1) {
           for (let i = 0; i < 12; i++) {
             trendData.push({
               date: '',
-              [searchTerm]: 0
+              team1: { points: 0, term: term1 },
+              team2: { points: 0, term: term2 }
             });
           }
         }
@@ -62,6 +87,41 @@ export class Routes {
       });
     return trendPromise;
   }
+
+  // private getTrendData(): any {
+  //   const trendData: any = [];
+  //   const term0 = searchTerms;
+  //   const trendPromise = googleTrends
+  //     .interestOverTime({ keywords: [`${trendTerm} ${term0}`] })
+  //     .then((results: any) => {
+  //       const JSONresults = JSON.parse(results);
+  //       const formattedResults = JSONresults.default.timelineData.slice(-12);
+  //       formattedResults.forEach((data: any) => {
+  //         trendData.push({
+  //           date: data.formattedTime.substring(0, 3),
+  //           [searchTerm]: data.value[0]
+  //         });
+  //       });
+  //       // generate 0 data if no trend is found
+  //       if (trendData.length < 1) {
+  //         for (let i = 0; i < 12; i++) {
+  //           trendData.push({
+  //             date: '',
+  //             [searchTerm]: 0
+  //           });
+  //         }
+  //       }
+  //       return trendData;
+  //     })
+
+  //     .catch((err: any) => {
+  //       trendData.push({
+  //         error: 'error'
+  //       });
+  //       return trendData;
+  //     });
+  //   return trendPromise;
+  // }
 
   private setTrendTerm(): void {
     trendTerm = possibleTerms[Math.floor(Math.random() * possibleTerms.length)];
