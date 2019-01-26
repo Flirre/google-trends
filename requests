@@ -1,0 +1,18 @@
+:server = http://localhost:3001
+# POST team 1 medium score
+POST :server/term?team=team1&searchTerm=test
+
+#POST team 2 high score
+POST :server/term?team=team2&searchTerm=google
+
+#GET trend-data
+GET :server/trend
+
+#POST team 1 no score
+POST :server/term?team=team2&searchTerm=nmnrsgkregnrmsklvjvnmkfdlsnfdkjvndkj;nfdklkmlkmlkmlkm
+
+#POST team 2 no score
+POST :server/term?team=team2&searchTerm=nrgreskjrengjkresngknresgkjsreng;kjlkrsgmrslkemglkresmglkresgmrmglksmrlksgmemglkregsmgmlkremgmgglkresmggmlkre
+
+#GET trend-data
+GET :server/trend

@@ -13,6 +13,7 @@ class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.switch = this.switch.bind(this);
+    this.fetchTerm = this.fetchTerm.bind(this);
     this.fullscreenToggle = this.fullscreenToggle.bind(this);
     this.nextRound = this.nextRound.bind(this);
     this.updateType = this.updateType.bind(this);
@@ -27,6 +28,10 @@ class App extends React.Component<any, any> {
   }
 
   public componentWillMount() {
+    this.fetchTerm();
+  }
+
+  public fetchTerm = () => {
     fetch(`http://localhost:3001/term`)
       .then(resTerm => {
         return resTerm.json();
@@ -34,7 +39,7 @@ class App extends React.Component<any, any> {
       .then(jsonTerm => {
         this.setState({ term: jsonTerm.term });
       });
-  }
+  };
 
   public switch() {
     this.setState({ red: !this.state.red });
@@ -50,6 +55,7 @@ class App extends React.Component<any, any> {
         this.setState({ ready: 0, type: Types.Trend });
         break;
       case Types.Trend:
+        this.fetchTerm();
         this.setState((prevState: any) => ({
           ready: 0,
           round: prevState.round + 1,

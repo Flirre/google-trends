@@ -1,6 +1,11 @@
 * Client
-+ Set name after round 0.
-+ No point count during name round.
++ +Set name after round 0.+
++ +No point count during name round.+
++ Move points up to App
++ End game after 5 rounds (later change in game setup)
++ Compare scores after game end.
+
 
 * Server
 + Individual sessions
++ Keep score for anti-cheat purpose
