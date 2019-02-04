@@ -28,7 +28,7 @@ export class Routes {
       .get(async (req: Request, res: Response) => {
         this.setTrendTerm();
         res.status(200).send({
-          term: trendTerm.toUpperCase()
+          term: trendTerm
         });
       })
       .post(async (req: Request, res: Response) => {
@@ -48,7 +48,9 @@ export class Routes {
   }
 
   private getTrendData(): any {
-    const trendData: any = [];
+    let trendData: any = {};
+    const team1Data: any = [];
+    const team2Data: any = [];
     const { team1: term1, team2: term2 } = searchTerms;
     const trendPromise = googleTrends
       .interestOverTime({
@@ -58,10 +60,15 @@ export class Routes {
         const JSONresults = JSON.parse(results);
         const formattedResults = JSONresults.default.timelineData.slice(-12);
         formattedResults.forEach((data: any) => {
-          trendData.push({
+          team1Data.push({
             date: data.formattedTime,
-            team1: { points: data.value[0], term: term1 },
-            team2: { points: data.value[1], term: term2 }
+            points: data.value[0],
+            term: term1
+          });
+          team2Data.push({
+            date: data.formattedTime,
+            points: data.value[1],
+            term: term2
           });
         });
         points.team1 += formattedResults[11].value[0];
@@ -69,13 +76,15 @@ export class Routes {
         // generate empty data if both terms fail and no trend is found
         if (trendData.length < 1) {
           for (let i = 0; i < 12; i++) {
-            trendData.push({
-              date: '',
-              team1: { points: 0, term: term1 },
-              team2: { points: 0, term: term2 }
+            team1Data.push({
+              team1: { date: '', points: 0, term: term1 }
+            });
+            team2Data.push({
+              team2: { date: '', points: 0, term: term2 }
             });
           }
         }
+        trendData = { team1: team1Data, team2: team2Data };
         return trendData;
       })
 

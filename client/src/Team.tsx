@@ -20,7 +20,6 @@ class Team extends React.Component<any, any> {
       };
     } else if (nextProps.round > prevState.prevProps.round) {
       return {
-        data: [],
         inputSearchTerm: '',
         prevProps: nextProps,
         ready: false,
@@ -36,7 +35,6 @@ class Team extends React.Component<any, any> {
     this.setName = this.setName.bind(this);
     this.signalReady = this.signalReady.bind(this);
     this.state = {
-      data: [],
       error: false,
       inputSearchTerm: '',
       loaded: false,
@@ -76,16 +74,22 @@ class Team extends React.Component<any, any> {
   public keyPress = (e: any) => {
     if (e.keyCode === 13) {
       this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
-        this.fetchData();
-        this.signalReady();
+        this.props
+          .postTeamTerm(this.props.team, this.state.searchTerm)
+          .then(() => {
+            this.signalReady();
+          });
       });
     }
   };
 
   public updateSearchTerm = () => {
     this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
-      this.fetchData();
-      this.signalReady();
+      this.props
+        .postTeamTerm(this.props.team, this.state.searchTerm) // this.state.name
+        .then(() => {
+          this.signalReady();
+        });
     });
   };
 
@@ -99,32 +103,10 @@ class Team extends React.Component<any, any> {
     }
   }
 
-  public fetchData() {
-    this.setState({ loaded: false });
-    fetch(`http://localhost:3001/trend/?searchTerm=${this.state.searchTerm}`)
-      .then(results => {
-        return results.json();
-      })
-      .then(jsonResults => {
-        jsonResults.message[0].error === 'error'
-          ? this.setState({ error: true, loaded: false })
-          : this.setState((prevState: any) => ({
-              data: jsonResults,
-              error: false,
-              loaded: true,
-              score:
-                prevState.score +
-                jsonResults.message[jsonResults.message.length - 1][
-                  this.state.searchTerm
-                ]
-            }));
-      });
-  }
-
   public render() {
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
-        <h2 className="round">TERM {this.props.term}</h2>
+        <h2 className="round">TERM {this.props.term.toUpperCase()}</h2>
         {!(this.props.type === Types.Search) ? (
           <Button
             className="next"
@@ -203,10 +185,11 @@ class Team extends React.Component<any, any> {
             <div className="chart-container">
               <div className="chart">
                 <Chart
-                  data={this.state.data}
-                  searchTerm={this.state.searchTerm}
+                  data={this.props.data}
                   color={this.props.color}
                   loaded={this.state.loaded}
+                  team={this.props.team}
+                  term={this.props.term}
                 />
               </div>
             </div>

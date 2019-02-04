@@ -14,10 +14,12 @@ class App extends React.Component<any, any> {
     super(props);
     this.switch = this.switch.bind(this);
     this.fetchTerm = this.fetchTerm.bind(this);
+    this.postTeamTerm = this.postTeamTerm.bind(this);
     this.fullscreenToggle = this.fullscreenToggle.bind(this);
     this.nextRound = this.nextRound.bind(this);
     this.updateType = this.updateType.bind(this);
     this.state = {
+      data: {},
       fullscreen: false,
       ready: 0,
       red: true,
@@ -41,6 +43,28 @@ class App extends React.Component<any, any> {
       });
   };
 
+  public postTeamTerm = (team: string, term: string) => {
+    return fetch(`http://localhost:3001/term?team=${team}&searchTerm=${term}`, {
+      headers: { 'Content-Type': 'text/html' },
+      method: 'POST'
+    });
+  };
+
+  public fetchData() {
+    this.setState({ loaded: false });
+    fetch(`http://localhost:3001/trend`)
+      .then(results => {
+        return results.json();
+      })
+      .then(jsonResults => {
+        this.setState({
+          data: jsonResults.message,
+          error: false,
+          loaded: true
+        });
+      });
+  }
+
   public switch() {
     this.setState({ red: !this.state.red });
   }
@@ -52,6 +76,7 @@ class App extends React.Component<any, any> {
   public updateType = () => {
     switch (this.state.type) {
       case Types.Search:
+        this.fetchData();
         this.setState({ ready: 0, type: Types.Trend });
         break;
       case Types.Trend:
@@ -91,6 +116,7 @@ class App extends React.Component<any, any> {
               : 'half-width'
           }
           color="red"
+          data={this.state.data}
           buttonColor="blue"
           switch={this.switch}
           fullscreen={this.state.fullscreen}
@@ -98,7 +124,9 @@ class App extends React.Component<any, any> {
           round={this.state.round}
           type={this.state.type}
           term={this.state.term}
+          team="team1"
           nextRound={this.nextRound}
+          postTeamTerm={this.postTeamTerm}
         />
         <Team
           className={
@@ -107,6 +135,7 @@ class App extends React.Component<any, any> {
               : 'half-width'
           }
           color="blue"
+          data={this.state.data}
           buttonColor="red"
           switch={this.switch}
           fullscreen={this.state.fullscreen}
@@ -114,7 +143,9 @@ class App extends React.Component<any, any> {
           round={this.state.round}
           type={this.state.type}
           term={this.state.term}
+          team="team2"
           nextRound={this.nextRound}
+          postTeamTerm={this.postTeamTerm}
         />
       </div>
     );
