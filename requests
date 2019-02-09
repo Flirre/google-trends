@@ -9,10 +9,10 @@ POST :server/term?team=team2&searchTerm=google
 GET :server/trend
 
 #POST team 1 no score
-POST :server/term?team=team2&searchTerm=nmnrsgkregnrmsklvjvnmkfdlsnfdkjvndkj;nfdklkmlkmlkmlkm
+POST :server/term?team=team1&searchTerm=nmnrsgkregnrms
 
 #POST team 2 no score
-POST :server/term?team=team2&searchTerm=nrgreskjrengjkresngknresgkjsreng;kjlkrsgmrslkemglkresmglkresgmrmglksmrlksgmemglkregsmgmlkremgmgglkresmggmlkre
+POST :server/term?team=team2&searchTerm=nrgreskjrengjkre
 
-#GET trend-data
+#GET trend-dataG
 GET :server/trend
