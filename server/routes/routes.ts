@@ -77,10 +77,14 @@ export class Routes {
         if (trendData.length < 1) {
           for (let i = 0; i < 12; i++) {
             team1Data.push({
-              team1: { date: '', points: 0, term: term1 }
+              date: '',
+              points: 0,
+              term: term1
             });
             team2Data.push({
-              team2: { date: '', points: 0, term: term2 }
+              date: '',
+              points: 0,
+              term: term2
             });
           }
         }
@@ -89,10 +93,25 @@ export class Routes {
       })
 
       .catch((err: any) => {
-        trendData.push({
-          error: 'error'
-        });
-        return trendData;
+        let brokenTrend = {};
+        for (let i = 0; i < 12; i++) {
+          const date = new Date();
+          date.setMonth(date.getMonth() - i);
+          const month = date.toString().substring(4, 7);
+          const year = date.getFullYear();
+          team1Data.push({
+            date: `${month} ${year}`,
+            points: 0,
+            term: term1
+          });
+          team2Data.push({
+            date: `${month} ${year}`,
+            points: 0,
+            term: term2
+          });
+        }
+        brokenTrend = { team1: team1Data, team2: team2Data };
+        return brokenTrend;
       });
     return trendPromise;
   }
