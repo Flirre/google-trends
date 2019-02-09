@@ -55,6 +55,14 @@ class Team extends React.Component<any, any> {
       this.setName(`Team ${prevProps.term} ${prevState.searchTerm}`);
       this.setState({ score: 0 });
     }
+
+    if (
+      this.props.type === Types.Trend &&
+      this.state.ready &&
+      prevState.ready
+    ) {
+      this.setState({ ready: false });
+    }
   }
 
   public incrementScore() {
