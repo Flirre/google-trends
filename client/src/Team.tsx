@@ -71,18 +71,6 @@ class Team extends React.Component<any, any> {
     this.setState({ inputSearchTerm: e.target.value });
   };
 
-  public keyPress = (e: any) => {
-    if (e.keyCode === 13) {
-      this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
-        this.props
-          .postTeamTerm(this.props.team, this.state.searchTerm)
-          .then(() => {
-            this.signalReady();
-          });
-      });
-    }
-  };
-
   public updateSearchTerm = () => {
     this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
       this.props
@@ -91,6 +79,12 @@ class Team extends React.Component<any, any> {
           this.signalReady();
         });
     });
+  };
+
+  public keyPress = (e: any) => {
+    if (e.keyCode === 13) {
+      this.updateSearchTerm();
+    }
   };
 
   public signalReady() {
