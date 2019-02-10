@@ -96,7 +96,8 @@ export class Routes {
         let brokenTrend = {};
         for (let i = 0; i < 12; i++) {
           const date = new Date();
-          date.setMonth(date.getMonth() - i);
+          date.setFullYear(date.getFullYear() - 1);
+          date.setMonth(date.getMonth() + i);
           const month = date.toString().substring(4, 7);
           const year = date.getFullYear();
           team1Data.push({
@@ -115,41 +116,6 @@ export class Routes {
       });
     return trendPromise;
   }
-
-  // private getTrendData(): any {
-  //   const trendData: any = [];
-  //   const term0 = searchTerms;
-  //   const trendPromise = googleTrends
-  //     .interestOverTime({ keywords: [`${trendTerm} ${term0}`] })
-  //     .then((results: any) => {
-  //       const JSONresults = JSON.parse(results);
-  //       const formattedResults = JSONresults.default.timelineData.slice(-12);
-  //       formattedResults.forEach((data: any) => {
-  //         trendData.push({
-  //           date: data.formattedTime.substring(0, 3),
-  //           [searchTerm]: data.value[0]
-  //         });
-  //       });
-  //       // generate 0 data if no trend is found
-  //       if (trendData.length < 1) {
-  //         for (let i = 0; i < 12; i++) {
-  //           trendData.push({
-  //             date: '',
-  //             [searchTerm]: 0
-  //           });
-  //         }
-  //       }
-  //       return trendData;
-  //     })
-
-  //     .catch((err: any) => {
-  //       trendData.push({
-  //         error: 'error'
-  //       });
-  //       return trendData;
-  //     });
-  //   return trendPromise;
-  // }
 
   private setTrendTerm(): void {
     trendTerm = possibleTerms[Math.floor(Math.random() * possibleTerms.length)];
