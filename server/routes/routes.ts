@@ -28,18 +28,18 @@ export class Routes {
       .get(async (req: Request, res: Response) => {
         this.setTrendTerm();
         res.status(200).send({
+          points,
           term: trendTerm
         });
       })
       .post(async (req: Request, res: Response) => {
         this.addTrendTerm(req.query.searchTerm, req.query.team);
-        res
-          .status(200)
-          .send(
-            `Succesfully posted ${req.query.searchTerm}. Result: term - ${
-              searchTerms[req.query.team]
-            }.\n terms=${JSON.stringify(searchTerms)}`
-          );
+        res.status(200).send(
+          `Succesfully posted ${req.query.searchTerm}. Result: term - ${
+            searchTerms[req.query.team]
+          }.\n terms=${JSON.stringify(searchTerms)}
+\n points=${JSON.stringify(points)}`
+        );
       });
   }
   private addTrendTerm(searchTerm: string, team: string): void {

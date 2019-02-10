@@ -21,6 +21,7 @@ class App extends React.Component<any, any> {
     this.state = {
       data: {},
       fullscreen: false,
+      points: {},
       ready: 0,
       red: true,
       round: 0,
@@ -39,7 +40,10 @@ class App extends React.Component<any, any> {
         return resTerm.json();
       })
       .then(jsonTerm => {
-        this.setState({ term: jsonTerm.term });
+        this.setState({
+          points: jsonTerm.points,
+          term: jsonTerm.term
+        });
       });
   };
 
@@ -121,6 +125,7 @@ class App extends React.Component<any, any> {
           switch={this.switch}
           fullscreen={this.state.fullscreen}
           fullscreenToggle={this.fullscreenToggle}
+          points={this.state.points.team1}
           round={this.state.round}
           type={this.state.type}
           term={this.state.term}
@@ -140,6 +145,7 @@ class App extends React.Component<any, any> {
           switch={this.switch}
           fullscreen={this.state.fullscreen}
           fullscreenToggle={this.fullscreenToggle}
+          points={this.state.points.team2}
           round={this.state.round}
           type={this.state.type}
           term={this.state.term}

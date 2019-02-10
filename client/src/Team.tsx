@@ -141,7 +141,7 @@ class Team extends React.Component<any, any> {
               <div className="middle center">
                 <h1 className="teamName">{this.state.name.toUpperCase()}</h1>
 
-                <h2>{this.state.score} POINTS</h2>
+                <h2>{this.props.points} POINTS</h2>
               </div>
               <Button
                 className="fullscreen-toggle"
