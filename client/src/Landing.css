@@ -1,0 +1,25 @@
+.landing-div {
+  /* stylelint-disable-next-line declaration-colon-newline-after */
+  background-image: linear-gradient(
+    to right,
+    #ea4335,
+    #f23374,
+    #dc49af,
+    #a66bdd,
+    #4285f4
+  );
+  width: inherit;
+  text-align: center;
+}
+
+.landing-welcome {
+  position: relative;
+  top: 15%;
+  font-size: 64px;
+}
+
+.landing-button {
+  position: relative;
+  top: 40%;
+  border-radius: 0 !important;
+}

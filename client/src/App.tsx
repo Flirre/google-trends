@@ -1,6 +1,7 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
+import Landing from './Landing';
 import Team from './Team';
 
 enum Types {
@@ -12,6 +13,7 @@ enum Types {
 class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
+    this.startGame = this.startGame.bind(this);
     this.switch = this.switch.bind(this);
     this.fetchTerm = this.fetchTerm.bind(this);
     this.postTeamTerm = this.postTeamTerm.bind(this);
@@ -21,6 +23,7 @@ class App extends React.Component<any, any> {
     this.state = {
       data: {},
       fullscreen: false,
+      landing: true,
       points: {},
       ready: 0,
       red: true,
@@ -33,6 +36,12 @@ class App extends React.Component<any, any> {
   public componentWillMount() {
     this.fetchTerm();
   }
+
+  public startGame = () => {
+    fetch(`http://localhost:3001/start`).then(() => {
+      this.setState({ landing: false });
+    });
+  };
 
   public fetchTerm = () => {
     fetch(`http://localhost:3001/term`)
@@ -113,46 +122,52 @@ class App extends React.Component<any, any> {
   public render() {
     return (
       <div className="container">
-        <Team
-          className={
-            this.state.fullscreen
-              ? 'full-width ' + (this.state.red ? 'visible' : 'hidden')
-              : 'half-width'
-          }
-          color="red"
-          data={this.state.data}
-          buttonColor="blue"
-          switch={this.switch}
-          fullscreen={this.state.fullscreen}
-          fullscreenToggle={this.fullscreenToggle}
-          points={this.state.points.team1}
-          round={this.state.round}
-          type={this.state.type}
-          term={this.state.term}
-          team="team1"
-          nextRound={this.nextRound}
-          postTeamTerm={this.postTeamTerm}
-        />
-        <Team
-          className={
-            this.state.fullscreen
-              ? 'full-width ' + (!this.state.red ? 'visible' : 'hidden')
-              : 'half-width'
-          }
-          color="blue"
-          data={this.state.data}
-          buttonColor="red"
-          switch={this.switch}
-          fullscreen={this.state.fullscreen}
-          fullscreenToggle={this.fullscreenToggle}
-          points={this.state.points.team2}
-          round={this.state.round}
-          type={this.state.type}
-          term={this.state.term}
-          team="team2"
-          nextRound={this.nextRound}
-          postTeamTerm={this.postTeamTerm}
-        />
+        {this.state.landing ? (
+          <Landing startGame={this.startGame} />
+        ) : (
+          <>
+            <Team
+              className={
+                this.state.fullscreen
+                  ? 'full-width ' + (this.state.red ? 'visible' : 'hidden')
+                  : 'half-width'
+              }
+              color="red"
+              data={this.state.data}
+              buttonColor="blue"
+              switch={this.switch}
+              fullscreen={this.state.fullscreen}
+              fullscreenToggle={this.fullscreenToggle}
+              points={this.state.points.team1}
+              round={this.state.round}
+              type={this.state.type}
+              term={this.state.term}
+              team="team1"
+              nextRound={this.nextRound}
+              postTeamTerm={this.postTeamTerm}
+            />
+            <Team
+              className={
+                this.state.fullscreen
+                  ? 'full-width ' + (!this.state.red ? 'visible' : 'hidden')
+                  : 'half-width'
+              }
+              color="blue"
+              data={this.state.data}
+              buttonColor="red"
+              switch={this.switch}
+              fullscreen={this.state.fullscreen}
+              fullscreenToggle={this.fullscreenToggle}
+              points={this.state.points.team2}
+              round={this.state.round}
+              type={this.state.type}
+              term={this.state.term}
+              team="team2"
+              nextRound={this.nextRound}
+              postTeamTerm={this.postTeamTerm}
+            />
+          </>
+        )}
       </div>
     );
   }

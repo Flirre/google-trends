@@ -1,20 +1,47 @@
 import { Request, Response } from 'express';
 import { Application } from 'express-serve-static-core';
+import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions';
+import { document } from 'firebase-functions/lib/providers/firestore';
 import * as googleTrends from 'google-trends-api';
 
-const possibleTerms: string[] = [
-  'Christmas',
-  'Easter',
-  'Thanksgiving',
-  'Summer',
-  'Winter'
-];
+// Firebase setup
+/* tslint:disable-next-line:no-var-requires */
+const serviceAccount = require('../../../../.secrets/googletrends.json');
+
+// weak attempt to avoid bots attacking fbase.
+function reverso(str: any) {
+  return str
+    .split('')
+    .reverse()
+    .join('');
+}
+// very weak
+const url2 = 'moc.oiesaberif.';
+const url1 = 57323;
+const url0 = '-sdnert//:sptth';
+//
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: reverso(url0) + (url1 + 12345) + reverso(url2)
+});
+
+const db = admin.firestore();
+
 const points: any = { team1: 0, team2: 0 };
 let trendTerm: string;
 const searchTerms: any = {};
+let possibleTerms: string[] = [];
 
 export class Routes {
   public routes(app: Application): void {
+    app.route('/start').get(async (req: Request, res: Response) => {
+      this.fetchTerms().then(() => {
+        res.status(200).send();
+      });
+    });
+
     app.route('/trend').get(async (req: Request, res: Response) => {
       this.getTrendData().then((trendData: any) => {
         res.status(200).send({
@@ -27,6 +54,7 @@ export class Routes {
       .route('/term')
       .get(async (req: Request, res: Response) => {
         this.setTrendTerm();
+
         res.status(200).send({
           points,
           term: trendTerm
@@ -120,4 +148,29 @@ export class Routes {
   private setTrendTerm(): void {
     trendTerm = possibleTerms[Math.floor(Math.random() * possibleTerms.length)];
   }
+
+  /* tslint:disable */
+  public fetchTerms(): any {
+    return new Promise((resolve, reject) => {
+      db.collection('terms')
+        .doc('testTerms')
+        .get()
+        .then(document => {
+          if (document.data()) {
+            return document.data();
+          }
+        })
+        .then(document => {
+          return document!.terms;
+        })
+        .then(terms => {
+          possibleTerms = terms;
+          resolve('fetch complete.');
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    });
+  }
+  /* tslint:enable */
 }
