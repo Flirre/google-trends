@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { Application } from 'express-serve-static-core';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { document } from 'firebase-functions/lib/providers/firestore';
 import * as googleTrends from 'google-trends-api';
 
 // Firebase setup

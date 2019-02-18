@@ -33,12 +33,9 @@ class App extends React.Component<any, any> {
     };
   }
 
-  public componentWillMount() {
-    this.fetchTerm();
-  }
-
   public startGame = () => {
     fetch(`http://localhost:3001/start`).then(() => {
+      this.fetchTerm();
       this.setState({ landing: false });
     });
   };

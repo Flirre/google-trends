@@ -7,6 +7,10 @@ class Landing extends React.PureComponent<any, any> {
     super(props);
   }
 
+  public componentDidMount() {
+    fetch(`http://localhost:3001/start`);
+  }
+
   public render() {
     return (
       <div className="landing-div">

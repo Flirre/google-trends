@@ -49,7 +49,7 @@ class Chart extends React.Component<any, any> {
               margin={{ top: 30, right: 60, left: 0, bottom: 0 }}
             >
               <XAxis dataKey="date" />
-              <YAxis />
+              <YAxis type="number" domain={[0, 100]} />
               <CartesianGrid strokeDasharray="2 2" />
               <Tooltip />
               <Legend />
