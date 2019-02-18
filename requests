@@ -14,5 +14,8 @@ POST :server/term?team=team1&searchTerm=nmnrsgkregnrms
 #POST team 2 no score
 POST :server/term?team=team2&searchTerm=nrgreskjrengjkre
 
-#GET trend-dataG
+#GET trend-data
 GET :server/trend
+
+#GET start game
+GET :server/start

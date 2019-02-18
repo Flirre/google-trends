@@ -1,8 +1,7 @@
-import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import { Routes } from './routes/routes';
-import * as googleTrends from 'google-trends-api';
 import * as cors from 'cors';
+import * as express from 'express';
+import { Routes } from './routes/routes';
 
 class App {
   public app: express.Application;
