@@ -41,6 +41,14 @@ let possibleTerms: string[] = [];
 export class Routes {
   public routes(app: Application): void {
     app.route('/start').get(async (req: Request, res: Response) => {
+      matchRef.update({
+        team1: 0,
+        team1name: 'test',
+        team2: 0,
+        team2name: 'alsotest',
+        termhistory: [],
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+      });
       this.fetchTerms().then(() => {
         res.status(200).send();
       });
