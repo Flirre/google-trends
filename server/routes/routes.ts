@@ -1,3 +1,4 @@
+import { Firestore } from '@google-cloud/firestore';
 import { Request, Response } from 'express';
 import { Application } from 'express-serve-static-core';
 import * as admin from 'firebase-admin';
@@ -28,6 +29,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 const matchRef = db.collection('matches').doc('test-match');
+const increment = admin.firestore.FieldValue.increment;
 
 const points: any = { team1: 0, team2: 0 };
 let round = 0;
@@ -110,6 +112,10 @@ export class Routes {
         });
         points.team1 += formattedResults[11].value[0];
         points.team2 += formattedResults[11].value[1];
+        const setScore = matchRef.update({
+          team1: increment(formattedResults[11].value[0]),
+          team2: increment(formattedResults[11].value[1])
+        });
         // generate empty data if both terms fail and no trend is found
         if (trendData.length < 1) {
           for (let i = 0; i < 12; i++) {
