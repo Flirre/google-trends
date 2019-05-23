@@ -27,8 +27,11 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+const matchRef = db.collection('matches').doc('test-match');
 
 const points: any = { team1: 0, team2: 0 };
+let round = 0;
+const maxRounds = 2;
 let trendTerm: string;
 const searchTerms: any = {};
 let possibleTerms: string[] = [];
@@ -53,9 +56,10 @@ export class Routes {
       .route('/term')
       .get(async (req: Request, res: Response) => {
         this.setTrendTerm();
-
         res.status(200).send({
+          gameOver: this.gameOver(),
           points,
+          round,
           term: trendTerm
         });
       })
@@ -68,6 +72,12 @@ export class Routes {
 \n points=${JSON.stringify(points)}`
         );
       });
+
+    app.route('/end').get(async (req: Request, res: Response) => {
+      res.status(200).send({
+        winner: this.calcWinner()
+      });
+    });
   }
   private addTrendTerm(searchTerm: string, team: string): void {
     searchTerms[team] = searchTerm;
@@ -141,6 +151,7 @@ export class Routes {
         brokenTrend = { team1: team1Data, team2: team2Data };
         return brokenTrend;
       });
+    round++;
     return trendPromise;
   }
 
@@ -152,7 +163,7 @@ export class Routes {
   public fetchTerms(): any {
     return new Promise((resolve, reject) => {
       db.collection('terms')
-        .doc('testTerms')
+        .doc('testTerms2')
         .get()
         .then(document => {
           if (document.data()) {
@@ -172,4 +183,15 @@ export class Routes {
     });
   }
   /* tslint:enable */
+
+  private gameOver(): boolean {
+    return round === maxRounds;
+  }
+
+  private calcWinner(): string {
+    const winner = Object.keys(points).reduce((a, b) => {
+      return points[a] > points[b] ? a : b;
+    });
+    return winner;
+  }
 }

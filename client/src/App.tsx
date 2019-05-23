@@ -1,6 +1,7 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
+import EndScreen from './EndScreen';
 import Landing from './Landing';
 import Team from './Team';
 
@@ -23,6 +24,7 @@ class App extends React.Component<any, any> {
     this.state = {
       data: {},
       fullscreen: false,
+      gameOver: false,
       landing: true,
       points: {},
       ready: 0,
@@ -47,6 +49,7 @@ class App extends React.Component<any, any> {
       })
       .then(jsonTerm => {
         this.setState({
+          gameOver: jsonTerm.gameOver,
           points: jsonTerm.points,
           term: jsonTerm.term
         });
@@ -123,46 +126,52 @@ class App extends React.Component<any, any> {
           <Landing startGame={this.startGame} />
         ) : (
           <>
-            <Team
-              className={
-                this.state.fullscreen
-                  ? 'full-width ' + (this.state.red ? 'visible' : 'hidden')
-                  : 'half-width'
-              }
-              color="red"
-              data={this.state.data}
-              buttonColor="blue"
-              switch={this.switch}
-              fullscreen={this.state.fullscreen}
-              fullscreenToggle={this.fullscreenToggle}
-              points={this.state.points.team1}
-              round={this.state.round}
-              type={this.state.type}
-              term={this.state.term}
-              team="team1"
-              nextRound={this.nextRound}
-              postTeamTerm={this.postTeamTerm}
-            />
-            <Team
-              className={
-                this.state.fullscreen
-                  ? 'full-width ' + (!this.state.red ? 'visible' : 'hidden')
-                  : 'half-width'
-              }
-              color="blue"
-              data={this.state.data}
-              buttonColor="red"
-              switch={this.switch}
-              fullscreen={this.state.fullscreen}
-              fullscreenToggle={this.fullscreenToggle}
-              points={this.state.points.team2}
-              round={this.state.round}
-              type={this.state.type}
-              term={this.state.term}
-              team="team2"
-              nextRound={this.nextRound}
-              postTeamTerm={this.postTeamTerm}
-            />
+            {this.state.gameOver ? (
+              <EndScreen />
+            ) : (
+              <>
+                <Team
+                  className={
+                    this.state.fullscreen
+                      ? 'full-width ' + (this.state.red ? 'visible' : 'hidden')
+                      : 'half-width'
+                  }
+                  color="red"
+                  data={this.state.data}
+                  buttonColor="blue"
+                  switch={this.switch}
+                  fullscreen={this.state.fullscreen}
+                  fullscreenToggle={this.fullscreenToggle}
+                  points={this.state.points.team1}
+                  round={this.state.round}
+                  type={this.state.type}
+                  term={this.state.term}
+                  team="team1"
+                  nextRound={this.nextRound}
+                  postTeamTerm={this.postTeamTerm}
+                />
+                <Team
+                  className={
+                    this.state.fullscreen
+                      ? 'full-width ' + (!this.state.red ? 'visible' : 'hidden')
+                      : 'half-width'
+                  }
+                  color="blue"
+                  data={this.state.data}
+                  buttonColor="red"
+                  switch={this.switch}
+                  fullscreen={this.state.fullscreen}
+                  fullscreenToggle={this.fullscreenToggle}
+                  points={this.state.points.team2}
+                  round={this.state.round}
+                  type={this.state.type}
+                  term={this.state.term}
+                  team="team2"
+                  nextRound={this.nextRound}
+                  postTeamTerm={this.postTeamTerm}
+                />
+              </>
+            )}
           </>
         )}
       </div>

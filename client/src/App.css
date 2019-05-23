@@ -92,6 +92,23 @@ h2 {
   width: 90%;
 }
 
+/* stylelint-disable */
+.gameOver {
+  align-items: center;
+  background-image: linear-gradient(
+    to right,
+    #ea4335,
+    #f23374,
+    #dc49af,
+    #a66bdd,
+    #4285f4
+  );
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+/* stylelint-enable */
+
 /* Chart */
 .chart-container {
   height: 100vh;
