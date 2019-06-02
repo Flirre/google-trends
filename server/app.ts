@@ -14,36 +14,32 @@ class App {
     this.app = express();
     this.config();
     this.routePrv.routes(this.app);
-    let num = 0;
+    const num = 0;
     const server = http.createServer(this.app);
     this.io = socketIO(server);
 
-    const incAndEmit = async (socket: socketIO.Socket) => {
-      const result = await num++;
-      socket.emit('increment', result);
-    };
-
     this.io.on('connection', socket => {
       console.log(
-        `new connection, current connections ${Object.keys(
+        `new connection, current connections: ${Object.keys(
           this.io.sockets.sockets
         )}`
       ),
-        setInterval(() => incAndEmit(socket), 10000);
+        // socket.on('message', (message: string) => {
+        //   this.io.in('1234').emit('message', message);
+        // });
 
-      // socket.on('message', (message: string) => {
-      //   this.io.in('1234').emit('message', message);
-      // });
-
-      socket.on('room', (room: string) => {
-        if (this.isRoomFree(room)) {
-          console.log(this.io.sockets.adapter.rooms[room].length);
-          console.log(`client joined room ${room}`);
-          socket.join(room);
-        } else {
-          console.log('room is full');
-        }
-      });
+        socket.on('room', (room: string) => {
+          if (this.isRoomFree(room)) {
+            console.log(`client joined room ${room}`);
+            socket.join(room);
+            socket.emit(
+              'team',
+              `team${this.io.sockets.adapter.rooms[room].length}`
+            );
+          } else {
+            console.log('room is full');
+          }
+        });
 
       socket.on('disconnect', () => {
         console.log('client disconnected');

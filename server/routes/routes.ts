@@ -32,7 +32,7 @@ const matchRef = db.collection('matches').doc('test-match');
 const increment = admin.firestore.FieldValue.increment;
 
 let round = 0;
-const maxRounds = 2;
+const maxRounds = 4;
 let trendTerm: string;
 const searchTerms: any = {};
 let possibleTerms: string[] = [];

@@ -31,6 +31,7 @@ class Chart extends React.Component<any, any> {
   }
 
   public render() {
+    const { team1, team2 } = this.props.data;
     return (
       <div
         style={{
@@ -45,24 +46,32 @@ class Chart extends React.Component<any, any> {
             <LineChart
               width={450}
               height={300}
-              data={this.props.data[this.props.team]}
               margin={{ top: 30, right: 60, left: 0, bottom: 0 }}
             >
-              <XAxis dataKey="date" />
+              <XAxis dataKey="date" allowDuplicatedCategory={false} />
+
               <YAxis type="number" domain={[0, 100]} />
               <CartesianGrid strokeDasharray="2 2" />
-              <Tooltip />
-              <Legend />
+              <Legend verticalAlign="top" />
               <Line
+                data={team1}
                 type="linear"
                 dataKey={'points'}
                 dot={false}
-                name={`${this.props.term} ${
-                  this.props.data[this.props.team][0].term
-                }`}
-                stroke={this.props.color === 'red' ? colors.red : colors.blue}
+                name={`${this.props.term} ${this.props.data.team1[0].term}`}
+                stroke={colors.red}
                 strokeWidth={2.3}
               />
+              <Line
+                data={team2}
+                type="linear"
+                dataKey={'points'}
+                dot={false}
+                name={`${this.props.term} ${this.props.data.team2[0].term}`}
+                stroke={colors.blue}
+                strokeWidth={2.3}
+              />
+              <Tooltip />
             </LineChart>
           ) : (
             <div />

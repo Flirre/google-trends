@@ -36,6 +36,7 @@ class App extends React.Component<any, any> {
       ready: false,
       red: true,
       round: 0,
+      team: 'no team',
       term: '',
       type: Types.Point
     };
@@ -50,6 +51,7 @@ class App extends React.Component<any, any> {
     this.socket.on('ready', () => this.setState({ ready: true }));
     this.socket.on('notReady', () => this.setState({ ready: false }));
     this.socket.on('message', (message: string) => this.setState({ message }));
+    this.socket.on('team', (team: string) => this.setState({ team }));
   }
 
   public joinRoom(name: string) {
@@ -177,11 +179,11 @@ class App extends React.Component<any, any> {
                   buttonColor="blue"
                   switch={this.switch}
                   fullscreen={this.state.fullscreen}
-                  points={this.state.points.team1}
+                  points={this.state.points[this.state.team]}
                   round={this.state.round}
                   type={this.state.type}
                   term={this.state.term}
-                  team="team1"
+                  team={this.state.team}
                   nextRound={this.nextRound}
                   postTeamTerm={this.postTeamTerm}
                 />

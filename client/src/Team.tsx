@@ -31,7 +31,6 @@ class Team extends React.Component<any, any> {
 
   constructor(props: any) {
     super(props);
-    this.incrementScore = this.incrementScore.bind(this);
     this.setName = this.setName.bind(this);
     this.signalReady = this.signalReady.bind(this);
     this.state = {
@@ -63,12 +62,6 @@ class Team extends React.Component<any, any> {
     ) {
       this.setState({ ready: false });
     }
-  }
-
-  public incrementScore() {
-    this.setState((prevState: any) => ({
-      score: prevState.score + Math.floor(Math.random() * 100)
-    }));
   }
 
   public setName(newName: string) {
@@ -114,37 +107,11 @@ class Team extends React.Component<any, any> {
         {this.props.type === Types.Point ? (
           <React.Fragment>
             <div className="teamContainer">
-              <div className="top left">
-                <Button
-                  size="mini"
-                  floated="left"
-                  className={this.props.buttonColor}
-                  content="Switch"
-                  onClick={this.props.switch}
-                />
-              </div>
-              <div className="top right">
-                <Button
-                  size="mini"
-                  floated="right"
-                  className={this.props.buttonColor}
-                  content="Increment"
-                  onClick={this.incrementScore}
-                />
-              </div>
               <div className="middle center">
                 <h1 className="teamName">{this.state.name.toUpperCase()}</h1>
 
                 <h2>{this.props.points} POINTS</h2>
               </div>
-              <Button
-                className="fullscreen-toggle"
-                fluid={true}
-                color="grey"
-                size="mini"
-                content="Fullscreen toggle"
-                onClick={this.props.fullscreenToggle}
-              />
             </div>
           </React.Fragment>
         ) : null}
@@ -166,13 +133,6 @@ class Team extends React.Component<any, any> {
                 />
               </div>
             </div>
-            <Button
-              className="fullscreen-toggle"
-              fluid={true}
-              color="grey"
-              size="mini"
-              content="Fullscreen toggle"
-              onClick={this.props.fullscreenToggle}
             />
           </React.Fragment>
         ) : null}
@@ -189,14 +149,6 @@ class Team extends React.Component<any, any> {
                 />
               </div>
             </div>
-            <Button
-              className="fullscreen-toggle"
-              fluid={true}
-              color="grey"
-              size="mini"
-              content="Fullscreen toggle"
-              onClick={this.props.fullscreenToggle}
-            />
           </React.Fragment>
         ) : null}
       </div>
