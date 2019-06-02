@@ -96,13 +96,7 @@ class Team extends React.Component<any, any> {
   };
 
   public signalReady() {
-    if (this.props.type === Types.Search && this.state.searchTerm === '') {
-      return;
-    }
-    if (!this.state.ready) {
-      this.props.nextRound();
-      this.setState({ ready: true });
-    }
+    this.props.nextRound();
   }
 
   public render() {

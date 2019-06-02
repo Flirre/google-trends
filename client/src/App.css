@@ -16,7 +16,15 @@ body {
 }
 
 .red {
-  background-color: #ea4335 !important;
+  /* stylelint-disable-next-line declaration-colon-newline-after */
+  background-image: linear-gradient(
+    to right,
+    #ea4335,
+    #f23374,
+    #dc49af,
+    #a66bdd,
+    #4285f4
+  );
 }
 
 .blue {

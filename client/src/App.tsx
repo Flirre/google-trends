@@ -1,5 +1,6 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
+import * as io from 'socket.io-client';
 import './App.css';
 import EndScreen from './EndScreen';
 import Landing from './Landing';
@@ -12,27 +13,47 @@ enum Types {
 }
 
 class App extends React.Component<any, any> {
+  public socket: SocketIOClient.Socket;
+
   constructor(props: any) {
     super(props);
     this.startGame = this.startGame.bind(this);
     this.switch = this.switch.bind(this);
     this.fetchTerm = this.fetchTerm.bind(this);
+    this.joinRoom = this.joinRoom.bind(this);
     this.postTeamTerm = this.postTeamTerm.bind(this);
     this.fullscreenToggle = this.fullscreenToggle.bind(this);
     this.nextRound = this.nextRound.bind(this);
     this.updateType = this.updateType.bind(this);
+    this.restartGame = this.restartGame.bind(this);
     this.state = {
+      count: false,
       data: {},
-      fullscreen: false,
+      fullscreen: true,
       gameOver: false,
       landing: true,
       points: {},
-      ready: 0,
+      ready: false,
       red: true,
       round: 0,
       term: '',
       type: Types.Point
     };
+  }
+
+  public componentDidMount() {
+    const endpoint = 'http://localhost:3001';
+    this.socket = io(endpoint);
+    this.socket.on('increment', (data: number) =>
+      this.setState({ count: data })
+    );
+    this.socket.on('ready', () => this.setState({ ready: true }));
+    this.socket.on('notReady', () => this.setState({ ready: false }));
+    this.socket.on('message', (message: string) => this.setState({ message }));
+  }
+
+  public joinRoom(name: string) {
+    this.socket.emit('room', name);
   }
 
   public startGame = () => {
@@ -110,24 +131,39 @@ class App extends React.Component<any, any> {
   };
 
   public nextRound() {
-    if (this.state.ready < 1) {
-      this.setState((prevState: any) => ({
-        ready: prevState.ready + 1
-      }));
-    } else {
-      this.updateType();
-    }
+    this.updateType();
+  }
+
+  public restartGame() {
+    this.startGame();
+    this.setState({
+      count: false,
+      data: {},
+      fullscreen: true,
+      gameOver: false,
+      points: {},
+      ready: false,
+      red: true,
+      round: 0,
+      term: '',
+      type: Types.Point
+    });
   }
 
   public render() {
     return (
       <div className="container">
         {this.state.landing ? (
-          <Landing startGame={this.startGame} />
+          <Landing
+            startGame={this.startGame}
+            message={this.state.message}
+            num={this.state.count}
+            joinRoom={this.joinRoom}
+          />
         ) : (
           <>
             {this.state.gameOver ? (
-              <EndScreen />
+              <EndScreen restartGame={this.restartGame} />
             ) : (
               <>
                 <Team
@@ -141,32 +177,11 @@ class App extends React.Component<any, any> {
                   buttonColor="blue"
                   switch={this.switch}
                   fullscreen={this.state.fullscreen}
-                  fullscreenToggle={this.fullscreenToggle}
                   points={this.state.points.team1}
                   round={this.state.round}
                   type={this.state.type}
                   term={this.state.term}
                   team="team1"
-                  nextRound={this.nextRound}
-                  postTeamTerm={this.postTeamTerm}
-                />
-                <Team
-                  className={
-                    this.state.fullscreen
-                      ? 'full-width ' + (!this.state.red ? 'visible' : 'hidden')
-                      : 'half-width'
-                  }
-                  color="blue"
-                  data={this.state.data}
-                  buttonColor="red"
-                  switch={this.switch}
-                  fullscreen={this.state.fullscreen}
-                  fullscreenToggle={this.fullscreenToggle}
-                  points={this.state.points.team2}
-                  round={this.state.round}
-                  type={this.state.type}
-                  term={this.state.term}
-                  team="team2"
                   nextRound={this.nextRound}
                   postTeamTerm={this.postTeamTerm}
                 />

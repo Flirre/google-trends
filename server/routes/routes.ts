@@ -31,7 +31,6 @@ const db = admin.firestore();
 const matchRef = db.collection('matches').doc('test-match');
 const increment = admin.firestore.FieldValue.increment;
 
-const points: any = { team1: 0, team2: 0 };
 let round = 0;
 const maxRounds = 2;
 let trendTerm: string;
@@ -41,6 +40,7 @@ let possibleTerms: string[] = [];
 export class Routes {
   public routes(app: Application): void {
     app.route('/start').get(async (req: Request, res: Response) => {
+      round = 0;
       matchRef.update({
         team1: 0,
         team1name: 'test',
@@ -68,7 +68,7 @@ export class Routes {
         this.setTrendTerm();
         res.status(200).send({
           gameOver: this.gameOver(),
-          points,
+          points: await this.getPoints(),
           round,
           term: trendTerm
         });
@@ -79,14 +79,58 @@ export class Routes {
           `Succesfully posted ${req.query.searchTerm}. Result: term - ${
             searchTerms[req.query.team]
           }.\n terms=${JSON.stringify(searchTerms)}
-\n points=${JSON.stringify(points)}`
+\n points=${JSON.stringify(await this.getPoints())}`
         );
       });
 
     app.route('/end').get(async (req: Request, res: Response) => {
       res.status(200).send({
-        winner: this.calcWinner()
+        winner: await this.calcWinner()
       });
+    });
+  }
+
+  /* tslint:disable */
+  public fetchTerms(): any {
+    return new Promise((resolve, reject) => {
+      db.collection('terms')
+        .doc('testTerms2')
+        .get()
+        .then(document => {
+          if (document.data()) {
+            return document.data();
+          }
+        })
+        .then(document => {
+          return document!.terms;
+        })
+        .then(terms => {
+          possibleTerms = terms;
+          resolve('fetch complete.');
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    });
+  }
+  /* tslint:enable */
+
+  public getPoints(): Promise<{ team1: number; team2: number }> {
+    return new Promise((resolve, reject) => {
+      matchRef
+        .get()
+        .then(document => {
+          if (document.data()) {
+            return document.data();
+          }
+        })
+        .then(document => {
+          resolve({ team1: document!.team1, team2: document!.team2 });
+        })
+        .catch(err => {
+          console.log(err);
+          reject({ team1: 0, team2: 0 });
+        });
     });
   }
   private addTrendTerm(searchTerm: string, team: string): void {
@@ -118,8 +162,6 @@ export class Routes {
             term: term2
           });
         });
-        points.team1 += formattedResults[11].value[0];
-        points.team2 += formattedResults[11].value[1];
         const setScore = matchRef.update({
           team1: increment(formattedResults[11].value[0]),
           team2: increment(formattedResults[11].value[1])
@@ -173,39 +215,37 @@ export class Routes {
     trendTerm = possibleTerms[Math.floor(Math.random() * possibleTerms.length)];
   }
 
-  /* tslint:disable */
-  public fetchTerms(): any {
-    return new Promise((resolve, reject) => {
-      db.collection('terms')
-        .doc('testTerms2')
-        .get()
-        .then(document => {
-          if (document.data()) {
-            return document.data();
-          }
-        })
-        .then(document => {
-          return document!.terms;
-        })
-        .then(terms => {
-          possibleTerms = terms;
-          resolve('fetch complete.');
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    });
-  }
-  /* tslint:enable */
-
   private gameOver(): boolean {
     return round === maxRounds;
   }
 
-  private calcWinner(): string {
-    const winner = Object.keys(points).reduce((a, b) => {
-      return points[a] > points[b] ? a : b;
+  private async calcWinner(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.getPoints()
+        .then(points => {
+          const { team1, team2 } = points;
+          matchRef
+            .get()
+            .then(document => {
+              if (document.data()) {
+                return document.data();
+              }
+            })
+            .then(document => {
+              if (team1 > team2) {
+                resolve(document!.team1name);
+              }
+              if (team2 > team1) {
+                resolve(document!.team2name);
+              } else {
+                resolve('DRAW');
+              }
+            });
+        })
+        .catch(err => {
+          console.log(err);
+          reject('DRAW');
+        });
     });
-    return winner;
   }
 }

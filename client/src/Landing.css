@@ -13,13 +13,18 @@
 }
 
 .landing-welcome {
-  position: relative;
-  top: 15%;
+  display: block;
+  margin-top: 160px !important;
   font-size: 64px;
 }
 
+.landing-connect {
+  display: block !important;
+  margin: 160px auto !important;
+}
+
 .landing-button {
-  position: relative;
-  top: 40%;
   border-radius: 0 !important;
+  display: block !important;
+  margin: 16px auto !important;
 }
