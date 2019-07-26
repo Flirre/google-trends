@@ -36,6 +36,7 @@ class Chart extends React.Component<any, any> {
       <div
         style={{
           backgroundColor: 'white',
+          color: 'black',
           height: '100%',
           margin: '0 auto',
           width: '75%'
@@ -52,7 +53,14 @@ class Chart extends React.Component<any, any> {
 
               <YAxis type="number" domain={[0, 100]} />
               <CartesianGrid strokeDasharray="2 2" />
-              <Legend verticalAlign="top" />
+              <Legend
+                verticalAlign="top"
+                iconSize={16}
+                iconType="square"
+                wrapperStyle={{
+                  top: '15px'
+                }}
+              />
               <Line
                 data={team1}
                 type="linear"
