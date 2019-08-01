@@ -43,9 +43,9 @@ export class Routes {
       round = 0;
       matchRef.update({
         team1: 0,
-        team1name: 'test',
+        team1name: 'left',
         team2: 0,
-        team2name: 'alsotest',
+        team2name: 'right',
         termhistory: [],
         timestamp: admin.firestore.FieldValue.serverTimestamp()
       });
@@ -68,8 +68,6 @@ export class Routes {
         this.setTrendTerm();
         res.status(200).send({
           gameOver: this.gameOver(),
-          points: await this.getPoints(),
-          round,
           term: trendTerm
         });
       })
@@ -86,6 +84,12 @@ export class Routes {
     app.route('/end').get(async (req: Request, res: Response) => {
       res.status(200).send({
         winner: await this.calcWinner()
+      });
+    });
+
+    app.route('/points').get(async (req: Request, res: Response) => {
+      res.status(200).send({
+        points: await this.getPoints()
       });
     });
   }

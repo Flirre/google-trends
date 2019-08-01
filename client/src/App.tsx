@@ -26,19 +26,23 @@ class App extends React.Component<any, any> {
     this.nextRound = this.nextRound.bind(this);
     this.updateType = this.updateType.bind(this);
     this.restartGame = this.restartGame.bind(this);
+    this.readyForNextScreen = this.readyForNextScreen.bind(this);
+    this.setWait = this.setWait.bind(this);
     this.state = {
       count: false,
       data: {},
       fullscreen: true,
       gameOver: false,
       landing: true,
-      points: {},
-      ready: false,
+      loaded: false,
+      points: { team1: 0, team2: 0 },
+      ready: 0,
       red: true,
       round: 0,
       team: 'no team',
       term: '',
-      type: Types.Point
+      type: Types.Point,
+      waiting: false
     };
   }
 
@@ -48,14 +52,38 @@ class App extends React.Component<any, any> {
     this.socket.on('increment', (data: number) =>
       this.setState({ count: data })
     );
-    this.socket.on('ready', () => this.setState({ ready: true }));
-    this.socket.on('notReady', () => this.setState({ ready: false }));
+    this.socket.on('readyOnServer', (ready: number) =>
+      this.setState({ ready })
+    );
     this.socket.on('message', (message: string) => this.setState({ message }));
     this.socket.on('team', (team: string) => this.setState({ team }));
+    this.socket.on('points', (points: any) => {
+      this.setState({ points });
+    });
+    this.socket.on('data', (data: any) => {
+      this.setState({ data, loaded: true });
+    });
+    this.socket.on('term', (term: string) => {
+      this.setState({ term });
+    });
+    this.socket.on('round', (round: number) => {
+      this.setState({ round });
+    });
+    this.socket.on('gameOver', () => {
+      this.setState({ gameOver: true });
+    });
+    this.socket.on('allReady', () => {
+      this.setWait(false);
+    });
   }
 
   public joinRoom(name: string) {
     this.socket.emit('room', name);
+    this.socket.emit('ready', false);
+  }
+
+  public readyForNextScreen() {
+    this.socket.emit('ready', false);
   }
 
   public startGame = () => {
@@ -66,17 +94,8 @@ class App extends React.Component<any, any> {
   };
 
   public fetchTerm = () => {
-    fetch(`http://localhost:3001/term`)
-      .then(resTerm => {
-        return resTerm.json();
-      })
-      .then(jsonTerm => {
-        this.setState({
-          gameOver: jsonTerm.gameOver,
-          points: jsonTerm.points,
-          term: jsonTerm.term
-        });
-      });
+    this.socket.emit('points');
+    this.socket.emit('term');
   };
 
   public postTeamTerm = (team: string, term: string) => {
@@ -87,18 +106,7 @@ class App extends React.Component<any, any> {
   };
 
   public fetchData() {
-    this.setState({ loaded: false });
-    fetch(`http://localhost:3001/trend`)
-      .then(results => {
-        return results.json();
-      })
-      .then(jsonResults => {
-        this.setState({
-          data: jsonResults.message,
-          error: false,
-          loaded: true
-        });
-      });
+    this.socket.emit('data');
   }
 
   public switch() {
@@ -133,6 +141,7 @@ class App extends React.Component<any, any> {
   };
 
   public nextRound() {
+    this.readyForNextScreen();
     this.updateType();
   }
 
@@ -144,12 +153,16 @@ class App extends React.Component<any, any> {
       fullscreen: true,
       gameOver: false,
       points: {},
-      ready: false,
+      ready: 0,
       red: true,
       round: 0,
       term: '',
       type: Types.Point
     });
+  }
+
+  public setWait(state: boolean) {
+    this.setState({ waiting: state });
   }
 
   public render() {
@@ -179,13 +192,17 @@ class App extends React.Component<any, any> {
                   buttonColor="blue"
                   switch={this.switch}
                   fullscreen={this.state.fullscreen}
+                  loaded={this.state.loaded}
                   points={this.state.points[this.state.team]}
                   round={this.state.round}
+                  ready={this.state.ready}
                   type={this.state.type}
                   term={this.state.term}
                   team={this.state.team}
                   nextRound={this.nextRound}
                   postTeamTerm={this.postTeamTerm}
+                  waiting={this.state.waiting}
+                  setWait={this.setWait}
                 />
               </>
             )}
