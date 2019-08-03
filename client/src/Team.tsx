@@ -8,8 +8,39 @@ enum Types {
   Trend
 }
 
-class Team extends React.Component<any, any> {
-  public static getDerivedStateFromProps(nextProps: any, prevState: any) {
+interface ITeamState {
+  error: boolean;
+  inputSearchTerm: string;
+  name: string;
+  prevProps: ITeamProps;
+  ready: number;
+  score: number;
+  searchTerm: string;
+}
+
+interface ITeamProps {
+  buttonColor: string;
+  className: string;
+  color: string;
+  data: any;
+  loaded: boolean;
+  nextRound: () => void;
+  points: number;
+  postTeamTerm: (team: string, term: string) => Promise<Response>;
+  ready: number;
+  round: number;
+  setWait: (waiting: boolean) => void;
+  team: string;
+  term: string;
+  type: Types;
+  waiting: boolean;
+}
+
+class Team extends React.Component<ITeamProps, ITeamState> {
+  public static getDerivedStateFromProps(
+    nextProps: ITeamProps,
+    prevState: ITeamState
+  ) {
     if (
       nextProps.type !== prevState.prevProps.type &&
       nextProps.round === prevState.prevProps.round
@@ -27,7 +58,7 @@ class Team extends React.Component<any, any> {
     return null;
   }
 
-  constructor(props: any) {
+  constructor(props: ITeamProps) {
     super(props);
     this.setName = this.setName.bind(this);
     this.signalReady = this.signalReady.bind(this);
@@ -42,7 +73,7 @@ class Team extends React.Component<any, any> {
     };
   }
 
-  public componentDidUpdate(prevProps: any, prevState: any) {
+  public componentDidUpdate(prevProps: ITeamProps, prevState: ITeamState) {
     if (
       prevProps !== this.props &&
       this.props.round === 1 &&
@@ -57,8 +88,14 @@ class Team extends React.Component<any, any> {
     this.setState({ name: newName });
   }
 
-  public onInputChange = (e: any) => {
+  public onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ inputSearchTerm: e.target.value });
+  };
+
+  public keyPress = (e: React.KeyboardEvent) => {
+    if (e.keyCode === 13) {
+      this.updateSearchTerm();
+    }
   };
 
   public updateSearchTerm = () => {
@@ -69,12 +106,6 @@ class Team extends React.Component<any, any> {
           this.signalReady();
         });
     });
-  };
-
-  public keyPress = (e: any) => {
-    if (e.keyCode === 13) {
-      this.updateSearchTerm();
-    }
   };
 
   public signalReady() {

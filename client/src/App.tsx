@@ -12,26 +12,42 @@ enum Types {
   Trend
 }
 
-class App extends React.Component<any, any> {
-  public socket: SocketIOClient.Socket;
+interface IAppState {
+  data: object;
+  gameOver: boolean;
+  landing: boolean;
+  loaded: boolean;
+  points: IPoints;
+  ready: number;
+  red: boolean;
+  round: number;
+  team: string;
+  term: string;
+  type: Types;
+  waiting: boolean;
+}
 
-  constructor(props: any) {
+interface IPoints {
+  team1: number;
+  team2: number;
+}
+
+class App extends React.Component<{}, IAppState> {
+  private socket: SocketIOClient.Socket;
+
+  constructor(props: {}) {
     super(props);
-    this.startGame = this.startGame.bind(this);
-    this.switch = this.switch.bind(this);
     this.fetchTerm = this.fetchTerm.bind(this);
     this.joinRoom = this.joinRoom.bind(this);
-    this.postTeamTerm = this.postTeamTerm.bind(this);
-    this.fullscreenToggle = this.fullscreenToggle.bind(this);
     this.nextRound = this.nextRound.bind(this);
-    this.updateType = this.updateType.bind(this);
-    this.restartGame = this.restartGame.bind(this);
+    this.postTeamTerm = this.postTeamTerm.bind(this);
     this.readyForNextScreen = this.readyForNextScreen.bind(this);
+    this.restartGame = this.restartGame.bind(this);
     this.setWait = this.setWait.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.updateType = this.updateType.bind(this);
     this.state = {
-      count: false,
       data: {},
-      fullscreen: true,
       gameOver: false,
       landing: true,
       loaded: false,
@@ -49,41 +65,38 @@ class App extends React.Component<any, any> {
   public componentDidMount() {
     const endpoint = 'http://localhost:3001';
     this.socket = io(endpoint);
-    this.socket.on('increment', (data: number) =>
-      this.setState({ count: data })
-    );
-    this.socket.on('readyOnServer', (ready: number) =>
-      this.setState({ ready })
-    );
-    this.socket.on('message', (message: string) => this.setState({ message }));
-    this.socket.on('team', (team: string) => this.setState({ team }));
-    this.socket.on('points', (points: any) => {
-      this.setState({ points });
-    });
-    this.socket.on('data', (data: any) => {
-      this.setState({ data, loaded: true });
-    });
-    this.socket.on('term', (term: string) => {
-      this.setState({ term });
-    });
-    this.socket.on('round', (round: number) => {
-      this.setState({ round });
-    });
-    this.socket.on('gameOver', () => {
-      this.setState({ gameOver: true });
-    });
+
     this.socket.on('allReady', () => {
       this.setWait(false);
     });
-  }
 
-  public joinRoom(name: string) {
-    this.socket.emit('room', name);
-    this.socket.emit('ready', false);
-  }
+    this.socket.on('data', (data: any) => {
+      this.setState({ data, loaded: true });
+    });
 
-  public readyForNextScreen() {
-    this.socket.emit('ready', false);
+    this.socket.on('gameOver', () => {
+      this.setState({ gameOver: true });
+    });
+
+    this.socket.on('points', (points: IPoints) => {
+      this.setState({ points });
+    });
+
+    this.socket.on('readyOnServer', (ready: number) =>
+      this.setState({ ready })
+    );
+
+    this.socket.on('round', (round: number) => {
+      this.setState({ round });
+    });
+
+    this.socket.on('team', (team: string) => {
+      this.setState({ team });
+    });
+
+    this.socket.on('term', (term: string) => {
+      this.setState({ term });
+    });
   }
 
   public startGame = () => {
@@ -98,24 +111,21 @@ class App extends React.Component<any, any> {
     this.socket.emit('term');
   };
 
+  public joinRoom(name: string) {
+    this.socket.emit('room', name);
+    this.readyForNextScreen();
+  }
+
+  public readyForNextScreen() {
+    this.socket.emit('ready', false);
+  }
+
   public postTeamTerm = (team: string, term: string) => {
     return fetch(`http://localhost:3001/term?team=${team}&searchTerm=${term}`, {
       headers: { 'Content-Type': 'text/html' },
       method: 'POST'
     });
   };
-
-  public fetchData() {
-    this.socket.emit('data');
-  }
-
-  public switch() {
-    this.setState({ red: !this.state.red });
-  }
-
-  public fullscreenToggle() {
-    this.setState({ fullscreen: !this.state.fullscreen });
-  }
 
   public updateType = () => {
     switch (this.state.type) {
@@ -125,7 +135,7 @@ class App extends React.Component<any, any> {
         break;
       case Types.Trend:
         this.fetchTerm();
-        this.setState((prevState: any) => ({
+        this.setState((prevState: IAppState) => ({
           ready: 0,
           round: prevState.round + 1,
           type: Types.Point
@@ -140,19 +150,25 @@ class App extends React.Component<any, any> {
     }
   };
 
+  public fetchData() {
+    this.socket.emit('data');
+  }
+
   public nextRound() {
     this.readyForNextScreen();
     this.updateType();
   }
 
+  public setWait(state: boolean) {
+    this.setState({ waiting: state });
+  }
+
   public restartGame() {
     this.startGame();
     this.setState({
-      count: false,
       data: {},
-      fullscreen: true,
       gameOver: false,
-      points: {},
+      points: { team1: 0, team2: 0 },
       ready: 0,
       red: true,
       round: 0,
@@ -161,20 +177,11 @@ class App extends React.Component<any, any> {
     });
   }
 
-  public setWait(state: boolean) {
-    this.setState({ waiting: state });
-  }
-
   public render() {
     return (
       <div className="container">
         {this.state.landing ? (
-          <Landing
-            startGame={this.startGame}
-            message={this.state.message}
-            num={this.state.count}
-            joinRoom={this.joinRoom}
-          />
+          <Landing startGame={this.startGame} joinRoom={this.joinRoom} />
         ) : (
           <>
             {this.state.gameOver ? (
@@ -182,27 +189,21 @@ class App extends React.Component<any, any> {
             ) : (
               <>
                 <Team
-                  className={
-                    this.state.fullscreen
-                      ? 'full-width ' + (this.state.red ? 'visible' : 'hidden')
-                      : 'half-width'
-                  }
+                  buttonColor="blue"
+                  className="full-width visible"
                   color="red"
                   data={this.state.data}
-                  buttonColor="blue"
-                  switch={this.switch}
-                  fullscreen={this.state.fullscreen}
                   loaded={this.state.loaded}
-                  points={this.state.points[this.state.team]}
-                  round={this.state.round}
-                  ready={this.state.ready}
-                  type={this.state.type}
-                  term={this.state.term}
-                  team={this.state.team}
                   nextRound={this.nextRound}
+                  points={this.state.points[this.state.team]}
                   postTeamTerm={this.postTeamTerm}
-                  waiting={this.state.waiting}
+                  ready={this.state.ready}
+                  round={this.state.round}
                   setWait={this.setWait}
+                  team={this.state.team}
+                  term={this.state.term}
+                  type={this.state.type}
+                  waiting={this.state.waiting}
                 />
               </>
             )}

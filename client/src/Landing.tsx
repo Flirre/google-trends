@@ -2,16 +2,17 @@ import * as React from 'react';
 import { Button } from 'semantic-ui-react';
 import './Landing.css';
 
-class Landing extends React.Component<
-  {
-    startGame: () => void;
-    message: string;
-    num: string;
-    joinRoom: (name: string) => void;
-  },
-  { roomName: string }
-> {
-  constructor(props: any) {
+interface ILandingState {
+  roomName: string;
+}
+
+interface ILandingProps {
+  startGame: () => void;
+  joinRoom: (name: string) => void;
+}
+
+class Landing extends React.Component<ILandingProps, ILandingState> {
+  constructor(props: ILandingProps) {
     super(props);
     this.state = { roomName: '' };
     this.handleChange = this.handleChange.bind(this);
@@ -38,9 +39,7 @@ class Landing extends React.Component<
   public render() {
     return (
       <div className="landing-div">
-        <h1 className="landing-welcome">
-          Welcome to Google Trends {this.props.num} {this.props.message}
-        </h1>
+        <h1 className="landing-welcome">Welcome to Google Trends</h1>
         <div onSubmit={this.joinRoom} className="landing-connect">
           <input
             type="text"
