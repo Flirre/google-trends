@@ -90,6 +90,13 @@ class App {
         }
       });
 
+      socket.on('start', () => {
+        console.log('start');
+        fetch('http://localhost:3001/start').then(() => {
+          socket.emit('start');
+        });
+      });
+
       socket.on('disconnect', () => {
         console.log('client disconnected');
       });

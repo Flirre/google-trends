@@ -20,10 +20,6 @@ class Landing extends React.Component<ILandingProps, ILandingState> {
     this.start = this.start.bind(this);
   }
 
-  public componentDidMount() {
-    fetch(`http://localhost:3001/start`);
-  }
-
   public handleChange(event: React.FormEvent<HTMLInputElement>) {
     this.setState({ roomName: event.currentTarget.value });
   }

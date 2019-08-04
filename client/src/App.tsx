@@ -90,6 +90,10 @@ class App extends React.Component<{}, IAppState> {
       this.setState({ round });
     });
 
+    this.socket.on('start', () => {
+      this.setState({ landing: false });
+    });
+
     this.socket.on('team', (team: string) => {
       this.setState({ team });
     });
@@ -100,10 +104,8 @@ class App extends React.Component<{}, IAppState> {
   }
 
   public startGame = () => {
-    fetch(`http://localhost:3001/start`).then(() => {
-      this.fetchTerm();
-      this.setState({ landing: false });
-    });
+    this.fetchTerm();
+    this.socket.emit('start');
   };
 
   public fetchTerm = () => {
