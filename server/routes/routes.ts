@@ -1,8 +1,6 @@
-import { Firestore } from '@google-cloud/firestore';
 import { Request, Response } from 'express';
 import { Application } from 'express-serve-static-core';
 import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
 import * as googleTrends from 'google-trends-api';
 
 // Firebase setup
