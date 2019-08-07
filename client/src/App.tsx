@@ -99,7 +99,20 @@ class App extends React.Component<{}, IAppState> {
     });
 
     this.socket.on('term', (term: string) => {
-      this.setState({ term });
+      if (term) {
+        this.setState({ term });
+      }
+    });
+
+    this.socket.on('postedTeamTerm', (team: string) => {
+      if (team === this.state.team) {
+        this.setWait(true);
+        this.nextRound();
+      }
+    });
+
+    this.socket.on('POST_ERROR', (error: any) => {
+      console.log('POST_ERROR', error);
     });
   }
 
@@ -123,10 +136,7 @@ class App extends React.Component<{}, IAppState> {
   }
 
   public postTeamTerm = (team: string, term: string) => {
-    return fetch(`http://localhost:3001/term?team=${team}&searchTerm=${term}`, {
-      headers: { 'Content-Type': 'text/html' },
-      method: 'POST'
-    });
+    this.socket.emit('postTeamTerm', team, term);
   };
 
   public updateType = () => {

@@ -97,6 +97,21 @@ class App {
         });
       });
 
+      socket.on('postTeamTerm', (team: string, term: string) => {
+        console.log(team, term);
+        fetch(`http://localhost:3001/term?team=${team}&searchTerm=${term}`, {
+          headers: { 'Content-Type': 'text/html' },
+          method: 'POST'
+        })
+          .then(() => {
+            this.io.emit('postedTeamTerm', team);
+          })
+          .catch((error: any) => {
+            console.log('POST_ERROR', error);
+            this.io.emit('POST_ERROR', error);
+          });
+      });
+
       socket.on('disconnect', () => {
         console.log('client disconnected');
       });

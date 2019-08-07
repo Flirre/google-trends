@@ -26,7 +26,7 @@ interface ITeamProps {
   loaded: boolean;
   nextRound: () => void;
   points: number;
-  postTeamTerm: (team: string, term: string) => Promise<Response>;
+  postTeamTerm: (team: string, term: string) => void;
   ready: number;
   round: number;
   setWait: (waiting: boolean) => void;
@@ -100,11 +100,7 @@ class Team extends React.Component<ITeamProps, ITeamState> {
 
   public updateSearchTerm = () => {
     this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
-      this.props
-        .postTeamTerm(this.props.team, this.state.searchTerm)
-        .then(() => {
-          this.signalReady();
-        });
+      this.props.postTeamTerm(this.props.team, this.state.searchTerm);
     });
   };
 
@@ -116,7 +112,9 @@ class Team extends React.Component<ITeamProps, ITeamState> {
   public render() {
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
-        <h2 className="round">TERM {this.props.term.toUpperCase()}</h2>
+        <h2 className="round">
+          TERM {this.props.term && this.props.term.toUpperCase()}
+        </h2>
         {this.props.ready !== 1 || !this.props.waiting ? (
           <>
             {' '}
