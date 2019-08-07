@@ -45,11 +45,10 @@ class App {
           this.io.emit('readyOnServer', ready);
         });
 
-      socket.on('points', () => {
-        fetch('http://localhost:3001/points').then(async (points: any) => {
-          const JSONpoints = await points.json();
-          this.io.emit('points', JSONpoints.points);
-        });
+      socket.on('points', async () => {
+        const result = await fetch('http://localhost:3001/points');
+        const { points } = await result.json();
+        this.io.emit('points', points);
       });
 
       socket.on('term', () => {
