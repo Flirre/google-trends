@@ -94,7 +94,6 @@ export class Routes {
     });
   }
 
-  /* tslint:disable */
   public fetchTerms(): any {
     return new Promise((resolve, reject) => {
       db.collection('terms')
@@ -117,7 +116,6 @@ export class Routes {
         });
     });
   }
-  /* tslint:enable */
 
   public getPoints(): Promise<{ team1: number; team2: number }> {
     return new Promise((resolve, reject) => {
@@ -137,6 +135,7 @@ export class Routes {
         });
     });
   }
+
   private addTrendTerm(searchTerm: string, team: string): void {
     searchTerms[team] = searchTerm;
     return;
