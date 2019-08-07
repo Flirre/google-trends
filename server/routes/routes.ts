@@ -6,25 +6,12 @@ import * as functions from 'firebase-functions';
 import * as googleTrends from 'google-trends-api';
 
 // Firebase setup
-/* tslint:disable-next-line:no-var-requires */
-const serviceAccount = require('../../../../.secrets/googletrends.json');
-
-// weak attempt to avoid bots attacking fbase.
-function reverso(str: any) {
-  return str
-    .split('')
-    .reverse()
-    .join('');
-}
-// very weak
-const url2 = 'moc.oiesaberif.';
-const url1 = 57323;
-const url0 = '-sdnert//:sptth';
-//
+import * as serviceAccount from '../db/serviceAccount.json';
+import * as firebaseConfig from '../db/firebaseConfig.json';
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: reverso(url0) + (url1 + 12345) + reverso(url2)
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  databaseURL: firebaseConfig.url
 });
 
 const db = admin.firestore();
