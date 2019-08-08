@@ -4,11 +4,11 @@ import * as express from 'express';
 import * as http from 'http';
 import fetch from 'node-fetch';
 import * as socketIO from 'socket.io';
-import { Routes } from './routes/routes';
+import { DB } from './db/dbFunctions';
 
 class App {
   public app: express.Application;
-  public routePrv: Routes = new Routes();
+  public routePrv: DB = new DB();
   public io: SocketIO.Server;
 
   constructor() {
@@ -26,20 +26,13 @@ class App {
         )}`
       ),
         socket.on('ready', (newScreen: boolean) => {
-          console.log('ready');
           ready++;
-          if (!newScreen) {
-            if (ready === 1) {
-              console.log('1 ready for search.');
-            }
-            if (ready === 2) {
-              console.log('2 ready for search.');
-              this.io.emit('allReady');
-              ready = 0;
-            }
+          if (ready === 1) {
+            console.log('1 ready for search.');
           }
-          if (newScreen) {
-            console.log('ready, newScreen');
+          if (ready === 2) {
+            console.log('2 ready for search.');
+            this.io.emit('allReady');
             ready = 0;
           }
           this.io.emit('readyOnServer', ready);
@@ -53,22 +46,19 @@ class App {
 
       socket.on('term', () => {
         fetch('http://localhost:3001/term').then(async (data: any) => {
-          const JSONData = await data.json();
-          this.io.emit('term', JSONData.term);
-          console.log(JSONData);
-          console.log(JSONData.gameOver);
-          if (JSONData.gameOver) {
-            console.log('yes', JSONData.gameOver);
+          const { term, gameOver } = await data.json();
+          console.log(term, gameOver);
+          this.io.emit('term', term);
+          if (gameOver) {
             this.io.emit('gameOver');
           }
-          // round
         });
       });
 
       socket.on('data', () => {
         fetch(`http://localhost:3001/trend`).then(async termData => {
-          const JSONTermData = await termData.json();
-          this.io.emit('data', JSONTermData.message);
+          const { message } = await termData.json();
+          this.io.emit('data', message);
         });
       });
 
@@ -81,23 +71,18 @@ class App {
             `team${this.io.sockets.adapter.rooms[room].length}`
           );
           if (this.isRoomEmpty(room)) {
-            console.log('empty room empty heart');
             ready = 0;
           }
-        } else {
-          console.log('room is full');
         }
       });
 
       socket.on('start', () => {
-        console.log('start');
         fetch('http://localhost:3001/start').then(() => {
           socket.emit('start');
         });
       });
 
       socket.on('postTeamTerm', (team: string, term: string) => {
-        console.log(team, term);
         fetch(`http://localhost:3001/term?team=${team}&searchTerm=${term}`, {
           headers: { 'Content-Type': 'text/html' },
           method: 'POST'

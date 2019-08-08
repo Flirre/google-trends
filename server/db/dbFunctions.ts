@@ -16,21 +16,21 @@ const db = admin.firestore();
 const matchRef = db.collection('matches').doc('test-match');
 const increment = admin.firestore.FieldValue.increment;
 
-let round = 0;
-const maxRounds = 4;
 let trendTerm: string;
 const searchTerms: any = {};
 let possibleTerms: string[] = [];
 
-export class Routes {
+export class DB {
   public routes(app: Application): void {
     app.route('/start').get(async (req: Request, res: Response) => {
-      round = 0;
       matchRef.update({
+        currentTerm: '',
+        maxRounds: 3,
+        round: 0,
         team1: 0,
-        team1name: 'left',
+        team1Name: 'left',
         team2: 0,
-        team2name: 'right',
+        team2Name: 'right',
         termhistory: [],
         timestamp: admin.firestore.FieldValue.serverTimestamp()
       });
@@ -52,7 +52,7 @@ export class Routes {
       .get(async (req: Request, res: Response) => {
         this.setTrendTerm();
         res.status(200).send({
-          gameOver: this.gameOver(),
+          gameOver: await this.gameOver(),
           term: trendTerm
         });
       })
@@ -126,7 +126,7 @@ export class Routes {
     return;
   }
 
-  private getTrendData(): any {
+  private async getTrendData(): Promise<any> {
     let trendData: any = {};
     const team1Data: any = [];
     const team2Data: any = [];
@@ -135,7 +135,7 @@ export class Routes {
       .interestOverTime({
         keyword: [`${trendTerm} ${term1}`, `${trendTerm} ${term2}`]
       })
-      .then((results: any) => {
+      .then(async (results: any) => {
         const JSONresults = JSON.parse(results);
         const formattedResults = JSONresults.default.timelineData.slice(-12);
         formattedResults.forEach((data: any) => {
@@ -150,10 +150,10 @@ export class Routes {
             term: term2
           });
         });
-        const setScore = matchRef.update({
-          team1: increment(formattedResults[11].value[0]),
-          team2: increment(formattedResults[11].value[1])
-        });
+        await this.setPoints(
+          formattedResults[11].value[0],
+          formattedResults[11].value[1]
+        );
         // generate empty data if both terms fail and no trend is found
         if (trendData.length < 1) {
           for (let i = 0; i < 12; i++) {
@@ -172,7 +172,6 @@ export class Routes {
         trendData = { team1: team1Data, team2: team2Data };
         return trendData;
       })
-
       .catch((err: any) => {
         let brokenTrend = {};
         for (let i = 0; i < 12; i++) {
@@ -195,45 +194,58 @@ export class Routes {
         brokenTrend = { team1: team1Data, team2: team2Data };
         return brokenTrend;
       });
-    round++;
+    await this.incrementRound();
     return trendPromise;
+  }
+
+  private async setPoints(
+    team1Points: number,
+    team2Points: number
+  ): Promise<FirebaseFirestore.WriteResult> {
+    return matchRef.update({
+      team1: increment(team1Points),
+      team2: increment(team2Points)
+    });
+  }
+
+  private incrementRound(): Promise<FirebaseFirestore.WriteResult> {
+    return matchRef.update({
+      round: admin.firestore.FieldValue.increment(1)
+    });
   }
 
   private setTrendTerm(): void {
     trendTerm = possibleTerms[Math.floor(Math.random() * possibleTerms.length)];
   }
 
-  private gameOver(): boolean {
-    return round === maxRounds;
+  private async gameOver(): Promise<boolean> {
+    const documentData = await this.getDocumentData();
+    const round = documentData!.round;
+    const maxRounds = documentData!.maxRounds;
+    return round >= maxRounds;
+  }
+
+  private async getDocumentData(): Promise<FirebaseFirestore.DocumentData> {
+    try {
+      const document = await matchRef.get();
+      const documentData = await document.data()!;
+      return documentData;
+    } catch (error) {
+      throw Error(error);
+    }
   }
 
   private async calcWinner(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      this.getPoints()
-        .then(points => {
-          const { team1, team2 } = points;
-          matchRef
-            .get()
-            .then(document => {
-              if (document.data()) {
-                return document.data();
-              }
-            })
-            .then(document => {
-              if (team1 > team2) {
-                resolve(document!.team1name);
-              }
-              if (team2 > team1) {
-                resolve(document!.team2name);
-              } else {
-                resolve('DRAW');
-              }
-            });
-        })
-        .catch(err => {
-          console.log(err);
-          reject('DRAW');
-        });
-    });
+    const { team1, team2 } = await this.getPoints();
+    const { team1Name, team2Name } = await this.getDocumentData();
+    console.log(team1, team2, team1Name, team2Name);
+    if (team1 > team2) {
+      return team1Name;
+    }
+    if (team2 > team1) {
+      return team2Name;
+    } else {
+      return 'DRAW';
+    }
   }
 }
