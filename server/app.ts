@@ -27,11 +27,7 @@ class App {
       ),
         socket.on('ready', (newScreen: boolean) => {
           ready++;
-          if (ready === 1) {
-            console.log('1 ready for search.');
-          }
           if (ready === 2) {
-            console.log('2 ready for search.');
             this.io.emit('allReady');
             ready = 0;
           }
@@ -47,7 +43,7 @@ class App {
       socket.on('term', () => {
         fetch('http://localhost:3001/term').then(async (data: any) => {
           const { term, gameOver } = await data.json();
-          console.log(term, gameOver);
+          console.log(`term: ${term}, gameOver: ${gameOver}`);
           this.io.emit('term', term);
           if (gameOver) {
             this.io.emit('gameOver');
@@ -113,7 +109,6 @@ class App {
   }
   private isRoomEmpty(room: string) {
     const roomExists = this.io.sockets.adapter.rooms[room];
-    console.log('empty?', this.io.sockets.adapter.rooms[room].length);
     if (roomExists) {
       return this.io.sockets.adapter.rooms[room].length === 1;
     } else {
