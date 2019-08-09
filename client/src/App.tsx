@@ -117,8 +117,8 @@ class App extends React.Component<{}, IAppState> {
   }
 
   public startGame = () => {
-    this.fetchTerm();
     this.socket.emit('start');
+    this.fetchTerm();
   };
 
   public fetchTerm = () => {
