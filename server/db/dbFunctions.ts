@@ -127,75 +127,87 @@ export class DB {
   }
 
   private async getTrendData(): Promise<any> {
-    let trendData: any = {};
-    const team1Data: any = [];
-    const team2Data: any = [];
-    const { team1: term1, team2: term2 } = searchTerms;
-    const trendPromise = googleTrends
-      .interestOverTime({
-        keyword: [`${trendTerm} ${term1}`, `${trendTerm} ${term2}`]
-      })
-      .then(async (results: any) => {
-        const JSONresults = JSON.parse(results);
-        const formattedResults = JSONresults.default.timelineData.slice(-12);
-        formattedResults.forEach((data: any) => {
-          team1Data.push({
-            date: data.formattedTime,
-            points: data.value[0],
-            term: term1
-          });
-          team2Data.push({
-            date: data.formattedTime,
-            points: data.value[1],
-            term: term2
-          });
-        });
-        await this.setPoints(
-          formattedResults[11].value[0],
-          formattedResults[11].value[1]
-        );
-        // generate empty data if both terms fail and no trend is found
-        if (trendData.length < 1) {
-          for (let i = 0; i < 12; i++) {
-            team1Data.push({
-              date: '',
-              points: 0,
-              term: term1
-            });
-            team2Data.push({
-              date: '',
-              points: 0,
-              term: term2
-            });
-          }
-        }
-        trendData = { team1: team1Data, team2: team2Data };
-        return trendData;
-      })
-      .catch((err: any) => {
-        let brokenTrend = {};
-        for (let i = 0; i < 12; i++) {
-          const date = new Date();
-          date.setFullYear(date.getFullYear() - 1);
-          date.setMonth(date.getMonth() + i);
-          const month = date.toString().substring(4, 7);
-          const year = date.getFullYear();
-          team1Data.push({
-            date: `${month} ${year}`,
-            points: 0,
-            term: term1
-          });
-          team2Data.push({
-            date: `${month} ${year}`,
-            points: 0,
-            term: term2
-          });
-        }
-        brokenTrend = { team1: team1Data, team2: team2Data };
-        return brokenTrend;
-      });
     await this.incrementRound();
-    return trendPromise;
+    let team1Data: any = [];
+    let team2Data: any = [];
+    let trendData = {};
+    const { team1: term1, team2: term2 } = searchTerms;
+
+    try {
+      const trend = await googleTrends.interestOverTime({
+        keyword: [`${trendTerm} ${term1}`, `${trendTerm} ${term2}`]
+      });
+      const JSONTrend = JSON.parse(trend);
+      const formattedTrend = JSONTrend.default.timelineData.slice(-12);
+      this.pushTrendData(formattedTrend, team1Data, term1, 0);
+      this.pushTrendData(formattedTrend, team2Data, term2, 1);
+
+      if (this.dataWasFetched(team1Data, team2Data)) {
+        const mostRecentData = formattedTrend[formattedTrend.length - 1];
+        const pointsTeam1 = mostRecentData.value[0];
+        const pointsTeam2 = mostRecentData.value[1];
+        await this.setPoints(pointsTeam1, pointsTeam2);
+      }
+
+      if (this.noDataWasFetched(team1Data, team2Data)) {
+        team1Data = this.generateDummyData(term1);
+        team2Data = this.generateDummyData(term2);
+      }
+
+      trendData = { team1: team1Data, team2: team2Data };
+      return trendData;
+    } catch (error) {
+      console.log(error);
+      trendData = {};
+      team1Data = this.generateDummyData(term1);
+      team2Data = this.generateDummyData(term2);
+      trendData = { team1: team1Data, team2: team2Data };
+      return trendData;
+    }
+  }
+
+  private pushTrendData(
+    trendData: any,
+    teamData: any,
+    term: string,
+    team: number
+  ) {
+    trendData.forEach((data: any) => {
+      teamData.push({
+        date: data.formattedTime,
+        points: data.value[team],
+        term
+      });
+    });
+  }
+
+  private dataWasFetched(term1: [], term2: []) {
+    return !this.noDataWasFetched(term1, term2);
+  }
+
+  private noDataWasFetched(term1: [], term2: []): boolean {
+    return this.isArrayEmpty(term1) && this.isArrayEmpty(term2);
+  }
+
+  private isArrayEmpty(array: []): boolean {
+    return array.length <= 0;
+  }
+
+  private generateDummyData(term: string): any[] {
+    const termData = [];
+    for (let i = 0; i < 12; i++) {
+      const date = new Date();
+      date.setFullYear(date.getFullYear() - 1);
+      date.setMonth(date.getMonth() + i);
+      const month = date.toString().substring(4, 7);
+      const year = date.getFullYear();
+      termData.push({
+        date: `${month} ${year}`,
+        points: 0,
+        term
+      });
+    }
+    return termData;
   }
 
   private async setPoints(
