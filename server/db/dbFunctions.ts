@@ -126,6 +126,10 @@ export class DB {
     return;
   }
 
+  private getSearchTerms(room: string) {
+    return { team1: '', team2: '' };
+  }
+
   private async getTrendData(): Promise<any> {
     await this.incrementRound();
     let team1Data: any = [];
