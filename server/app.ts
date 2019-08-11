@@ -62,10 +62,8 @@ class App {
         if (this.isRoomFree(room)) {
           console.log(`client joined room ${room}`);
           socket.join(room);
-          socket.emit(
-            'team',
-            `team${this.io.sockets.adapter.rooms[room].length}`
-          );
+          const nrOfTeamsInRoom = this.io.sockets.adapter.rooms[room].length;
+          socket.emit('team', `team${nrOfTeamsInRoom}`);
           if (this.isRoomEmpty(room)) {
             ready = 0;
           }
