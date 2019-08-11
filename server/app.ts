@@ -8,13 +8,13 @@ import { DB } from './db/dbFunctions';
 
 class App {
   public app: express.Application;
-  public routePrv: DB = new DB();
+  public db: DB = new DB();
   public io: SocketIO.Server;
 
   constructor() {
     this.app = express();
     this.config();
-    this.routePrv.routes(this.app);
+    this.db.routes(this.app);
     let ready = 0;
     const server = http.createServer(this.app);
     this.io = socketIO(server);
