@@ -22,23 +22,6 @@ let possibleTerms: string[] = [];
 
 export class DB {
   public routes(app: Application): void {
-    app.route('/start').get(async (req: Request, res: Response) => {
-      matchRef.update({
-        currentTerm: '',
-        maxRounds: 3,
-        round: 0,
-        team1: 0,
-        team1Name: 'left',
-        team2: 0,
-        team2Name: 'right',
-        termhistory: [],
-        timestamp: admin.firestore.FieldValue.serverTimestamp()
-      });
-      this.fetchTerms().then(() => {
-        res.status(200).send();
-      });
-    });
-
     app.route('/trend').get(async (req: Request, res: Response) => {
       this.getTrendData().then((trendData: any) => {
         res.status(200).send({
@@ -76,6 +59,25 @@ export class DB {
       res.status(200).send({
         points: await this.getPoints()
       });
+    });
+  }
+
+  public async startGame(): Promise<void> {
+    await this.resetGameState();
+    await this.fetchTerms();
+  }
+
+  private resetGameState(): Promise<FirebaseFirestore.WriteResult> {
+    return matchRef.update({
+      currentTerm: '',
+      maxRounds: 3,
+      round: 0,
+      team1: 0,
+      team1Name: 'left',
+      team2: 0,
+      team2Name: 'right',
+      termhistory: [],
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
   }
 

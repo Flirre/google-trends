@@ -72,10 +72,9 @@ class App {
         }
       });
 
-      socket.on('start', () => {
-        fetch('http://localhost:3001/start').then(() => {
-          socket.emit('start');
-        });
+      socket.on('start', async () => {
+        await this.db.startGame();
+        socket.emit('start');
       });
 
       socket.on('postTeamTerm', (team: string, term: string) => {
