@@ -104,23 +104,14 @@ export class DB {
     });
   }
 
-  public getPoints(): Promise<{ team1: number; team2: number }> {
-    return new Promise((resolve, reject) => {
-      matchRef
-        .get()
-        .then(document => {
-          if (document.data()) {
-            return document.data();
-          }
-        })
-        .then(document => {
-          resolve({ team1: document!.team1, team2: document!.team2 });
-        })
-        .catch(err => {
-          console.log(err);
-          reject({ team1: 0, team2: 0 });
-        });
-    });
+  public async getPoints(): Promise<{ team1: number; team2: number }> {
+    try {
+      const documentData = await this.getDocumentData();
+      return { team1: documentData!.team1, team2: documentData!.team2 };
+    } catch (error) {
+      console.log(error);
+      return { team1: 0, team2: 0 };
+    }
   }
 
   private addTrendTerm(searchTerm: string, team: string): void {

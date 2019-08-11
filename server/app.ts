@@ -35,8 +35,7 @@ class App {
         });
 
       socket.on('points', async () => {
-        const result = await fetch('http://localhost:3001/points');
-        const { points } = await result.json();
+        const points = await this.db.getPoints();
         this.io.emit('points', points);
       });
 
