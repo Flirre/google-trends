@@ -39,15 +39,15 @@ class App {
         this.io.emit('points', points);
       });
 
-      socket.on('term', () => {
-        fetch('http://localhost:3001/term').then(async (data: any) => {
-          const { term, gameOver } = await data.json();
-          console.log(`term: ${term}, gameOver: ${gameOver}`);
-          this.io.emit('term', term);
-          if (gameOver) {
-            this.io.emit('gameOver');
-          }
-        });
+      socket.on('term', async () => {
+        if (ready === 0) {
+          await this.db.setNextTrendTerm();
+        }
+        if (await this.db.gameOver()) {
+          this.io.emit('gameOver');
+        }
+        const term = await this.db.getTrendTerm();
+        this.io.emit('term', term);
       });
 
       socket.on('data', () => {
@@ -57,7 +57,7 @@ class App {
         });
       });
 
-      socket.on('room', (room: string) => {
+      socket.on('room', async (room: string) => {
         if (this.isRoomFree(room)) {
           console.log(`client joined room ${room}`);
           socket.join(room);
@@ -65,12 +65,12 @@ class App {
           socket.emit('team', `team${nrOfTeamsInRoom}`);
           if (this.isRoomEmpty(room)) {
             ready = 0;
+            await this.db.startGame();
           }
         }
       });
 
       socket.on('start', async () => {
-        await this.db.startGame();
         socket.emit('start');
       });
 

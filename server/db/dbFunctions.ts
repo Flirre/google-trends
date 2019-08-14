@@ -16,9 +16,7 @@ const db = admin.firestore();
 const matchRef = db.collection('matches').doc('test-match');
 const increment = admin.firestore.FieldValue.increment;
 
-let trendTerm: string;
 const searchTerms: any = {};
-let possibleTerms: string[] = [];
 
 export class DB {
   public routes(app: Application): void {
@@ -30,24 +28,15 @@ export class DB {
       });
     });
 
-    app
-      .route('/term')
-      .get(async (req: Request, res: Response) => {
-        this.setTrendTerm();
-        res.status(200).send({
-          gameOver: await this.gameOver(),
-          term: trendTerm
-        });
-      })
-      .post(async (req: Request, res: Response) => {
-        this.addTrendTerm(req.query.searchTerm, req.query.team);
-        res.status(200).send(
-          `Succesfully posted ${req.query.searchTerm}. Result: term - ${
-            searchTerms[req.query.team]
-          }.\n terms=${JSON.stringify(searchTerms)}
+    app.route('/term').post(async (req: Request, res: Response) => {
+      this.addTrendTerm(req.query.searchTerm, req.query.team);
+      res.status(200).send(
+        `Succesfully posted ${req.query.searchTerm}. Result: term - ${
+          searchTerms[req.query.team]
+        }.\n terms=${JSON.stringify(searchTerms)}
 \n points=${JSON.stringify(await this.getPoints())}`
-        );
-      });
+      );
+    });
 
     app.route('/end').get(async (req: Request, res: Response) => {
       res.status(200).send({
@@ -69,7 +58,7 @@ export class DB {
 
   private resetGameState(): Promise<FirebaseFirestore.WriteResult> {
     return matchRef.update({
-      currentTerm: '',
+      currentTerm: 'yeet',
       maxRounds: 3,
       round: 0,
       team1: 0,
@@ -77,31 +66,47 @@ export class DB {
       team2: 0,
       team2Name: 'right',
       termhistory: [],
+      terms: [],
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
   }
 
-  public fetchTerms(): any {
-    return new Promise((resolve, reject) => {
-      db.collection('terms')
-        .doc('testTerms2')
-        .get()
-        .then(document => {
-          if (document.data()) {
-            return document.data();
-          }
-        })
-        .then(document => {
-          return document!.terms;
-        })
-        .then(terms => {
-          possibleTerms = terms;
-          resolve('fetch complete.');
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    });
+  public async fetchTerms(): Promise<string[]> {
+    try {
+      const documentData = await this.getTermDocumentData();
+      const fetchedTerms = documentData!.terms;
+      this.setTerms(fetchedTerms);
+      return fetchedTerms;
+    } catch (error) {
+      console.error(error);
+      return ['ERROR'];
+    }
+  }
+
+  private setTerms(terms: string[]): Promise<FirebaseFirestore.WriteResult> {
+    return matchRef.update({ terms });
+  }
+
+  private async getTermDocument(): Promise<FirebaseFirestore.DocumentSnapshot> {
+    try {
+      const document = await db
+        .collection('terms')
+        .doc('testTerms')
+        .get();
+      return document;
+    } catch (error) {
+      throw Error(error);
+    }
+  }
+
+  private async getTermDocumentData(): Promise<FirebaseFirestore.DocumentData> {
+    try {
+      const document = await this.getTermDocument();
+      const documentData = await document.data()!;
+      return documentData;
+    } catch (error) {
+      throw Error(error);
+    }
   }
 
   public async getPoints(): Promise<{ team1: number; team2: number }> {
@@ -132,7 +137,7 @@ export class DB {
 
     try {
       const trend = await googleTrends.interestOverTime({
-        keyword: [`${trendTerm} ${term1}`, `${trendTerm} ${term2}`]
+        keyword: [`{trendTerm} ${term1}`, `{trendTerm} ${term2}`]
       });
       const JSONTrend = JSON.parse(trend);
       const formattedTrend = JSONTrend.default.timelineData.slice(-12);
@@ -223,11 +228,31 @@ export class DB {
     });
   }
 
-  private setTrendTerm(): void {
-    trendTerm = possibleTerms[Math.floor(Math.random() * possibleTerms.length)];
+  public async setNextTrendTerm(): Promise<FirebaseFirestore.WriteResult> {
+    const currentTerm = await this.popTrendTermFromList();
+    return matchRef.update({
+      currentTerm
+    });
   }
 
-  private async gameOver(): Promise<boolean> {
+  public async getTrendTerm(): Promise<string> {
+    const documentData = await this.getDocumentData();
+    const currentTerm = documentData!.currentTerm;
+    return currentTerm;
+  }
+
+  private async popTrendTermFromList(): Promise<string> {
+    const documentData = await this.getDocumentData();
+    // console.log(documentData);
+    const terms = documentData!.terms;
+    // console.log(terms);
+    const nextTerm = terms.pop();
+    // console.log(nextTerm);
+    await matchRef.update({ terms });
+    return nextTerm;
+  }
+
+  public async gameOver(): Promise<boolean> {
     const documentData = await this.getDocumentData();
     const round = documentData!.round;
     const maxRounds = documentData!.maxRounds;
@@ -247,7 +272,6 @@ export class DB {
   private async calcWinner(): Promise<string> {
     const { team1, team2 } = await this.getPoints();
     const { team1Name, team2Name } = await this.getDocumentData();
-    console.log(team1, team2, team1Name, team2Name);
     if (team1 > team2) {
       return team1Name;
     }
