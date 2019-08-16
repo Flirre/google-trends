@@ -65,6 +65,7 @@ class App {
           if (this.isRoomEmpty(room)) {
             await this.db.resetReady();
             await this.db.startGame();
+            await this.db.fetchTerms();
           }
         }
       });
@@ -74,18 +75,9 @@ class App {
         await this.db.resetReady();
       });
 
-      socket.on('postTeamTerm', (team: string, term: string) => {
-        fetch(`http://localhost:3001/term?team=${team}&searchTerm=${term}`, {
-          headers: { 'Content-Type': 'text/html' },
-          method: 'POST'
-        })
-          .then(() => {
-            this.io.emit('postedTeamTerm', team);
-          })
-          .catch((error: any) => {
-            console.log('POST_ERROR', error);
-            this.io.emit('POST_ERROR', error);
-          });
+      socket.on('postTeamTerm', async (team: string, term: string) => {
+        await this.db.addTrendTerm(term, team);
+        this.io.emit('postedTeamTerm', team);
       });
 
       socket.on('disconnect', () => {

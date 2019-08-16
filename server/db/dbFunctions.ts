@@ -16,8 +16,6 @@ const db = admin.firestore();
 const matchRef = db.collection('matches').doc('test-match');
 const increment = admin.firestore.FieldValue.increment;
 
-const searchTerms: any = {};
-
 export class DB {
   public routes(app: Application): void {
     app.route('/trend').get(async (req: Request, res: Response) => {
@@ -26,16 +24,6 @@ export class DB {
           message: trendData
         });
       });
-    });
-
-    app.route('/term').post(async (req: Request, res: Response) => {
-      this.addTrendTerm(req.query.searchTerm, req.query.team);
-      res.status(200).send(
-        `Succesfully posted ${req.query.searchTerm}. Result: term - ${
-          searchTerms[req.query.team]
-        }.\n terms=${JSON.stringify(searchTerms)}
-\n points=${JSON.stringify(await this.getPoints())}`
-      );
     });
 
     app.route('/end').get(async (req: Request, res: Response) => {
@@ -122,13 +110,18 @@ export class DB {
     }
   }
 
-  private addTrendTerm(searchTerm: string, team: string): void {
-    searchTerms[team] = searchTerm;
-    return;
+  public addTrendTerm(
+    searchTerm: string,
+    team: string
+  ): Promise<FirebaseFirestore.WriteResult> {
+    const key = `${team}Term`;
+    return matchRef.update({ [key]: searchTerm });
   }
 
-  private getSearchTerms(room: string) {
-    return { team1: '', team2: '' };
+  private async getSearchTerms(): Promise<{ team1: string; team2: string }> {
+    const documentData = await this.getDocumentData();
+    const { team1Term, team2Term } = documentData;
+    return { team1: team1Term, team2: team2Term };
   }
 
   private async getTrendData(): Promise<any> {
@@ -137,16 +130,16 @@ export class DB {
     let team2Data: any = [];
     let trendData = {};
     const trendTerm = await this.getTrendTerm();
-    const { team1: term1, team2: term2 } = searchTerms;
+    const { team1, team2 } = await this.getSearchTerms();
 
     try {
       const trend = await googleTrends.interestOverTime({
-        keyword: [`${trendTerm} ${term1}`, `${trendTerm} ${term2}`]
+        keyword: [`${trendTerm} ${team1}`, `${trendTerm} ${team2}`]
       });
       const JSONTrend = JSON.parse(trend);
       const formattedTrend = JSONTrend.default.timelineData.slice(-12);
-      this.pushTrendData(formattedTrend, team1Data, term1, 0);
-      this.pushTrendData(formattedTrend, team2Data, term2, 1);
+      this.pushTrendData(formattedTrend, team1Data, team1, 0);
+      this.pushTrendData(formattedTrend, team2Data, team2, 1);
 
       if (this.dataWasFetched(team1Data, team2Data)) {
         const mostRecentData = formattedTrend[formattedTrend.length - 1];
@@ -156,8 +149,8 @@ export class DB {
       }
 
       if (this.noDataWasFetched(team1Data, team2Data)) {
-        team1Data = this.generateDummyData(term1);
-        team2Data = this.generateDummyData(term2);
+        team1Data = this.generateDummyData(team1);
+        team2Data = this.generateDummyData(team2);
       }
 
       trendData = { team1: team1Data, team2: team2Data };
@@ -165,8 +158,8 @@ export class DB {
     } catch (error) {
       console.log(error);
       trendData = {};
-      team1Data = this.generateDummyData(term1);
-      team2Data = this.generateDummyData(term2);
+      team1Data = this.generateDummyData(team1);
+      team2Data = this.generateDummyData(team2);
       trendData = { team1: team1Data, team2: team2Data };
       return trendData;
     }
@@ -234,6 +227,10 @@ export class DB {
 
   public async setNextTrendTerm(): Promise<FirebaseFirestore.WriteResult> {
     const currentTerm = await this.popTrendTermFromList();
+    if (!currentTerm) {
+      await this.fetchTerms();
+      return this.setNextTrendTerm();
+    }
     return matchRef.update({
       currentTerm
     });
