@@ -61,10 +61,13 @@ export class DB {
       currentTerm: 'yeet',
       maxRounds: 3,
       round: 0,
+      ready: 0,
       team1: 0,
       team1Name: 'left',
+      team1Term: '',
       team2: 0,
       team2Name: 'right',
+      team2Term: '',
       termhistory: [],
       terms: [],
       timestamp: admin.firestore.FieldValue.serverTimestamp()
@@ -133,11 +136,12 @@ export class DB {
     let team1Data: any = [];
     let team2Data: any = [];
     let trendData = {};
+    const trendTerm = await this.getTrendTerm();
     const { team1: term1, team2: term2 } = searchTerms;
 
     try {
       const trend = await googleTrends.interestOverTime({
-        keyword: [`{trendTerm} ${term1}`, `{trendTerm} ${term2}`]
+        keyword: [`${trendTerm} ${term1}`, `${trendTerm} ${term2}`]
       });
       const JSONTrend = JSON.parse(trend);
       const formattedTrend = JSONTrend.default.timelineData.slice(-12);
@@ -243,11 +247,8 @@ export class DB {
 
   private async popTrendTermFromList(): Promise<string> {
     const documentData = await this.getDocumentData();
-    // console.log(documentData);
     const terms = documentData!.terms;
-    // console.log(terms);
     const nextTerm = terms.pop();
-    // console.log(nextTerm);
     await matchRef.update({ terms });
     return nextTerm;
   }
@@ -280,5 +281,33 @@ export class DB {
     } else {
       return 'DRAW';
     }
+  }
+
+  public async incrementReady(): Promise<FirebaseFirestore.WriteResult> {
+    return matchRef.update({
+      ready: admin.firestore.FieldValue.increment(1)
+    });
+  }
+
+  public resetReady(): Promise<FirebaseFirestore.WriteResult> {
+    return matchRef.update({ ready: 0 });
+  }
+
+  public async bothPlayersReady(): Promise<Boolean> {
+    const documentData = await this.getDocumentData();
+    const readyPlayers = documentData!.ready;
+    return readyPlayers === 2;
+  }
+
+  public async noPlayersReady(): Promise<Boolean> {
+    const documentData = await this.getDocumentData();
+    const readyPlayers = documentData!.ready;
+    return readyPlayers === 0;
+  }
+
+  public async getReadyPlayers(): Promise<number> {
+    const documentData = await this.getDocumentData();
+    const readyPlayers = documentData!.ready;
+    return readyPlayers;
   }
 }

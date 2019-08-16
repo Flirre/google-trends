@@ -15,7 +15,6 @@ class App {
     this.app = express();
     this.config();
     this.db.routes(this.app);
-    let ready = 0;
     const server = http.createServer(this.app);
     this.io = socketIO(server);
 
@@ -25,13 +24,13 @@ class App {
           this.io.sockets.sockets
         )}`
       ),
-        socket.on('ready', (newScreen: boolean) => {
-          ready++;
-          if (ready === 2) {
+        socket.on('ready', async () => {
+          await this.db.incrementReady();
+          if (await this.db.bothPlayersReady()) {
             this.io.emit('allReady');
-            ready = 0;
+            await this.db.resetReady();
           }
-          this.io.emit('readyOnServer', ready);
+          this.io.emit('readyOnServer', await this.db.getReadyPlayers());
         });
 
       socket.on('points', async () => {
@@ -40,7 +39,7 @@ class App {
       });
 
       socket.on('term', async () => {
-        if (ready === 0) {
+        if (await this.db.noPlayersReady()) {
           await this.db.setNextTrendTerm();
         }
         if (await this.db.gameOver()) {
@@ -64,7 +63,7 @@ class App {
           const nrOfTeamsInRoom = this.io.sockets.adapter.rooms[room].length;
           socket.emit('team', `team${nrOfTeamsInRoom}`);
           if (this.isRoomEmpty(room)) {
-            ready = 0;
+            await this.db.resetReady();
             await this.db.startGame();
           }
         }
@@ -72,6 +71,7 @@ class App {
 
       socket.on('start', async () => {
         socket.emit('start');
+        await this.db.resetReady();
       });
 
       socket.on('postTeamTerm', (team: string, term: string) => {
