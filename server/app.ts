@@ -49,11 +49,9 @@ class App {
         this.io.emit('term', term);
       });
 
-      socket.on('data', () => {
-        fetch(`http://localhost:3001/trend`).then(async termData => {
-          const { message } = await termData.json();
-          this.io.emit('data', message);
-        });
+      socket.on('data', async () => {
+        const trendData = await this.db.getTrendData();
+        this.io.emit('data', trendData);
       });
 
       socket.on('room', async (room: string) => {

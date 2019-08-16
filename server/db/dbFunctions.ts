@@ -124,7 +124,7 @@ export class DB {
     return { team1: team1Term, team2: team2Term };
   }
 
-  private async getTrendData(): Promise<any> {
+  public async getTrendData(): Promise<any> {
     await this.incrementRound();
     let team1Data: any = [];
     let team2Data: any = [];
