@@ -31,12 +31,6 @@ export class DB {
         winner: await this.calcWinner()
       });
     });
-
-    app.route('/points').get(async (req: Request, res: Response) => {
-      res.status(200).send({
-        points: await this.getPoints()
-      });
-    });
   }
 
   public async startGame(): Promise<void> {

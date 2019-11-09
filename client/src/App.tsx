@@ -20,6 +20,7 @@ interface IAppState {
   points: IPoints;
   ready: number;
   red: boolean;
+  room: string;
   round: number;
   team: string;
   term: string;
@@ -54,6 +55,7 @@ class App extends React.Component<{}, IAppState> {
       points: { team1: 0, team2: 0 },
       ready: 0,
       red: true,
+      room: '',
       round: 0,
       team: 'no team',
       term: '',
@@ -105,6 +107,7 @@ class App extends React.Component<{}, IAppState> {
     });
 
     this.socket.on('postedTeamTerm', (team: string) => {
+      console.log('ptt', team);
       if (team === this.state.team) {
         this.setWait(true);
         this.nextRound();
@@ -128,6 +131,7 @@ class App extends React.Component<{}, IAppState> {
 
   public joinRoom(name: string) {
     this.socket.emit('room', name);
+    this.setState({ room: name });
     this.readyForNextScreen();
   }
 

@@ -2,7 +2,6 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as express from 'express';
 import * as http from 'http';
-import fetch from 'node-fetch';
 import * as socketIO from 'socket.io';
 import { DB } from './db/dbFunctions';
 
@@ -31,6 +30,10 @@ class App {
             await this.db.resetReady();
           }
           this.io.emit('readyOnServer', await this.db.getReadyPlayers());
+          this.io
+            .in(Object.keys(socket.rooms)[0])
+            .emit('readyOnServer', await this.db.getReadyPlayers());
+          console.log(socket.rooms);
         });
 
       socket.on('points', async () => {

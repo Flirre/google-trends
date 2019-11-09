@@ -20,8 +20,6 @@
     "firebase-admin": "^7.0.0",
     "firebase-functions": "^2.3.1",
     "google-trends-api": "^4.9.0",
-    "node-fetch": "^2.6.0",
-    "nodemon": "^1.18.4",
     "socket.io": "^2.2.0"
   }
 }
