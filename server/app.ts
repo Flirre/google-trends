@@ -2,7 +2,6 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as express from 'express';
 import * as http from 'http';
-import fetch from 'node-fetch';
 import * as socketIO from 'socket.io';
 import { DB } from './db/dbFunctions';
 
@@ -15,7 +14,6 @@ class App {
     this.app = express();
     this.config();
     this.db.routes(this.app);
-    let ready = 0;
     const server = http.createServer(this.app);
     this.io = socketIO(server);
 
@@ -25,13 +23,17 @@ class App {
           this.io.sockets.sockets
         )}`
       ),
-        socket.on('ready', (newScreen: boolean) => {
-          ready++;
-          if (ready === 2) {
+        socket.on('ready', async () => {
+          await this.db.incrementReady();
+          if (await this.db.bothPlayersReady()) {
             this.io.emit('allReady');
-            ready = 0;
+            await this.db.resetReady();
           }
-          this.io.emit('readyOnServer', ready);
+          this.io.emit('readyOnServer', await this.db.getReadyPlayers());
+          this.io
+            .in(Object.keys(socket.rooms)[0])
+            .emit('readyOnServer', await this.db.getReadyPlayers());
+          console.log(socket.rooms);
         });
 
       socket.on('points', async () => {
@@ -40,7 +42,7 @@ class App {
       });
 
       socket.on('term', async () => {
-        if (ready === 0) {
+        if (await this.db.noPlayersReady()) {
           await this.db.setNextTrendTerm();
         }
         if (await this.db.gameOver()) {
@@ -50,11 +52,9 @@ class App {
         this.io.emit('term', term);
       });
 
-      socket.on('data', () => {
-        fetch(`http://localhost:3001/trend`).then(async termData => {
-          const { message } = await termData.json();
-          this.io.emit('data', message);
-        });
+      socket.on('data', async () => {
+        const trendData = await this.db.getTrendData();
+        this.io.emit('data', trendData);
       });
 
       socket.on('room', async (room: string) => {
@@ -64,28 +64,21 @@ class App {
           const nrOfTeamsInRoom = this.io.sockets.adapter.rooms[room].length;
           socket.emit('team', `team${nrOfTeamsInRoom}`);
           if (this.isRoomEmpty(room)) {
-            ready = 0;
+            await this.db.resetReady();
             await this.db.startGame();
+            await this.db.fetchTerms();
           }
         }
       });
 
       socket.on('start', async () => {
         socket.emit('start');
+        await this.db.resetReady();
       });
 
-      socket.on('postTeamTerm', (team: string, term: string) => {
-        fetch(`http://localhost:3001/term?team=${team}&searchTerm=${term}`, {
-          headers: { 'Content-Type': 'text/html' },
-          method: 'POST'
-        })
-          .then(() => {
-            this.io.emit('postedTeamTerm', team);
-          })
-          .catch((error: any) => {
-            console.log('POST_ERROR', error);
-            this.io.emit('POST_ERROR', error);
-          });
+      socket.on('postTeamTerm', async (team: string, term: string) => {
+        await this.db.addTrendTerm(term, team);
+        this.io.emit('postedTeamTerm', team);
       });
 
       socket.on('disconnect', () => {
