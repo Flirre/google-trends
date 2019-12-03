@@ -99,9 +99,11 @@ class Team extends React.Component<ITeamProps, ITeamState> {
   };
 
   public updateSearchTerm = () => {
-    this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
-      this.props.postTeamTerm(this.props.team, this.state.searchTerm);
-    });
+    if (this.state.inputSearchTerm !== '') {
+      this.setState({ searchTerm: this.state.inputSearchTerm }, () => {
+        this.props.postTeamTerm(this.props.team, this.state.searchTerm);
+      });
+    }
   };
 
   public signalReady() {
@@ -109,6 +111,7 @@ class Team extends React.Component<ITeamProps, ITeamState> {
     this.props.nextRound();
   }
 
+  // TODO: Break apart Types into separate components
   public render() {
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>
