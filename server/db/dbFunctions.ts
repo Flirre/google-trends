@@ -17,22 +17,6 @@ const matchRef = db.collection('matches').doc('test-match');
 const increment = admin.firestore.FieldValue.increment;
 
 export class DB {
-  public routes(app: Application): void {
-    app.route('/trend').get(async (req: Request, res: Response) => {
-      this.getTrendData().then((trendData: any) => {
-        res.status(200).send({
-          message: trendData
-        });
-      });
-    });
-
-    app.route('/end').get(async (req: Request, res: Response) => {
-      res.status(200).send({
-        winner: await this.calcWinner()
-      });
-    });
-  }
-
   public async startGame(): Promise<void> {
     await this.resetGameState();
     await this.fetchTerms();
@@ -74,6 +58,7 @@ export class DB {
     let team2Data: any = [];
     let trendData = {};
     const trendTerm = await this.getTrendTerm();
+    const documentData = await this.getDocumentData();
     const { team1, team2 } = await this.getSearchTerms();
 
     try {
@@ -89,6 +74,7 @@ export class DB {
         const mostRecentData = formattedTrend[formattedTrend.length - 1];
         const pointsTeam1 = mostRecentData.value[0];
         const pointsTeam2 = mostRecentData.value[1];
+        // 	  if(documentData) TODO FIX PLS
         await this.setPoints(pointsTeam1, pointsTeam2);
       }
 

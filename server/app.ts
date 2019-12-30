@@ -13,7 +13,6 @@ class App {
   constructor() {
     this.app = express();
     this.config();
-    this.db.routes(this.app);
     const server = http.createServer(this.app);
     this.io = socketIO(server);
 
@@ -79,6 +78,10 @@ class App {
       socket.on('postTeamTerm', async (team: string, term: string) => {
         await this.db.addTrendTerm(term, team);
         this.io.emit('postedTeamTerm', team);
+      });
+
+      socket.on('gameOver', async () => {
+        socket.emit('gameOver');
       });
 
       socket.on('disconnect', () => {

@@ -175,8 +175,8 @@ class App extends React.Component<{}, IAppState> {
     this.updateType();
   }
 
-  public setWait(state: boolean) {
-    this.setState({ waiting: state });
+  public setWait(waiting: boolean) {
+    this.setState({ waiting });
   }
 
   public restartGame() {
