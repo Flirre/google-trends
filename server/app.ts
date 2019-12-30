@@ -28,7 +28,6 @@ class App {
             this.io.emit('allReady');
             await this.db.resetReady();
           }
-          this.io.emit('readyOnServer', await this.db.getReadyPlayers());
           this.io
             .in(Object.keys(socket.rooms)[0])
             .emit('readyOnServer', await this.db.getReadyPlayers());
@@ -72,7 +71,7 @@ class App {
 
       socket.on('start', async () => {
         socket.emit('start');
-        await this.db.resetReady();
+        await this.db.resetGameState();
       });
 
       socket.on('postTeamTerm', async (team: string, term: string) => {

@@ -70,7 +70,10 @@ export class DB {
       this.pushTrendData(formattedTrend, team1Data, team1, 0);
       this.pushTrendData(formattedTrend, team2Data, team2, 1);
 
-      if (this.dataWasFetched(team1Data, team2Data)) {
+      if (
+        this.dataWasFetched(team1Data, team2Data) &&
+        (await this.noPlayersReady())
+      ) {
         const mostRecentData = formattedTrend[formattedTrend.length - 1];
         const pointsTeam1 = mostRecentData.value[0];
         const pointsTeam2 = mostRecentData.value[1];
@@ -147,7 +150,7 @@ export class DB {
     return readyPlayers;
   }
 
-  private resetGameState(): Promise<FirebaseFirestore.WriteResult> {
+  public resetGameState(): Promise<FirebaseFirestore.WriteResult> {
     return matchRef.update({
       currentTerm: 'yeet',
       maxRounds: 3,

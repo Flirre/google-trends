@@ -107,7 +107,6 @@ class App extends React.Component<{}, IAppState> {
     });
 
     this.socket.on('postedTeamTerm', (team: string) => {
-      console.log('ptt', team);
       if (team === this.state.team) {
         this.setWait(true);
         this.nextRound();
@@ -116,6 +115,10 @@ class App extends React.Component<{}, IAppState> {
 
     this.socket.on('POST_ERROR', (error: any) => {
       console.log('POST_ERROR', error);
+    });
+
+    this.socket.on('gameState', (gameState: any) => {
+      console.log(gameState);
     });
   }
 
@@ -136,7 +139,7 @@ class App extends React.Component<{}, IAppState> {
   }
 
   public readyForNextScreen() {
-    this.socket.emit('ready', false);
+    this.socket.emit('ready');
   }
 
   public postTeamTerm = (team: string, term: string) => {
@@ -175,6 +178,7 @@ class App extends React.Component<{}, IAppState> {
     this.updateType();
   }
 
+  // TODO FIX FLASHING SCREEN ON TYPE CHANGE
   public setWait(waiting: boolean) {
     this.setState({ waiting });
   }
