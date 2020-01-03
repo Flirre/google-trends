@@ -18,7 +18,7 @@ body {
 .red {
   /* stylelint-disable-next-line declaration-colon-newline-after */
   background-image: linear-gradient(
-    to right,
+    to right top,
     #ea4335,
     #f23374,
     #dc49af,
@@ -104,7 +104,7 @@ h2 {
 .gameOver {
   align-items: center;
   background-image: linear-gradient(
-    to right,
+    to right top,
     #ea4335,
     #f23374,
     #dc49af,
