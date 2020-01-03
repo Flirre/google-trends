@@ -26,6 +26,7 @@ interface IAppState {
   term: string;
   type: Types;
   waiting: boolean;
+  winner: string;
 }
 
 interface IPoints {
@@ -60,7 +61,8 @@ class App extends React.Component<{}, IAppState> {
       team: 'no team',
       term: '',
       type: Types.Point,
-      waiting: false
+      waiting: false,
+      winner: ''
     };
   }
 
@@ -76,8 +78,8 @@ class App extends React.Component<{}, IAppState> {
       this.setState({ data, loaded: true });
     });
 
-    this.socket.on('gameOver', () => {
-      this.setState({ gameOver: true });
+    this.socket.on('gameOver', (winner: string) => {
+      this.setState({ gameOver: true, winner });
     });
 
     this.socket.on('points', (points: IPoints) => {
@@ -205,7 +207,10 @@ class App extends React.Component<{}, IAppState> {
         ) : (
           <>
             {this.state.gameOver ? (
-              <EndScreen restartGame={this.restartGame} />
+              <EndScreen
+                restartGame={this.restartGame}
+                winner={this.state.winner}
+              />
             ) : (
               <>
                 <Team

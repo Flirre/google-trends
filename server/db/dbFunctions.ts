@@ -69,7 +69,6 @@ export class DB {
       const formattedTrend = JSONTrend.default.timelineData.slice(-12);
       this.pushTrendData(formattedTrend, team1Data, team1, 0);
       this.pushTrendData(formattedTrend, team2Data, team2, 1);
-
       if (
         this.dataWasFetched(team1Data, team2Data) &&
         (await this.noPlayersReady())
@@ -77,15 +76,15 @@ export class DB {
         const mostRecentData = formattedTrend[formattedTrend.length - 1];
         const pointsTeam1 = mostRecentData.value[0];
         const pointsTeam2 = mostRecentData.value[1];
-        // 	  if(documentData) TODO FIX PLS
-        await this.setPoints(pointsTeam1, pointsTeam2);
+        console.log(documentData.round);
+        if (documentData.round !== 0) {
+          await this.setPoints(pointsTeam1, pointsTeam2);
+        }
       }
-
       if (this.noDataWasFetched(team1Data, team2Data)) {
         team1Data = this.generateDummyData(team1);
         team2Data = this.generateDummyData(team2);
       }
-
       trendData = { team1: team1Data, team2: team2Data };
       return trendData;
     } catch (error) {
@@ -166,6 +165,25 @@ export class DB {
       terms: [],
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
+  }
+
+  public async calcWinner(): Promise<string> {
+    const { team1, team2 } = await this.getPoints();
+    const { team1Name, team2Name } = await this.getDocumentData();
+    if (team1 > team2) {
+      return team1Name;
+    }
+    if (team2 > team1) {
+      return team2Name;
+    } else {
+      return 'DRAW';
+    }
+  }
+
+  public async clearCurrentSearchTerms(): Promise<
+    FirebaseFirestore.WriteResult
+  > {
+    return matchRef.update({ team1Term: '', team2Term: '' });
   }
 
   private setTerms(terms: string[]): Promise<FirebaseFirestore.WriteResult> {
@@ -275,19 +293,6 @@ export class DB {
       return documentData;
     } catch (error) {
       throw Error(error);
-    }
-  }
-
-  private async calcWinner(): Promise<string> {
-    const { team1, team2 } = await this.getPoints();
-    const { team1Name, team2Name } = await this.getDocumentData();
-    if (team1 > team2) {
-      return team1Name;
-    }
-    if (team2 > team1) {
-      return team2Name;
-    } else {
-      return 'DRAW';
     }
   }
 }

@@ -5,6 +5,7 @@ import './EndScreen.css';
 class EndScreen extends React.Component<
   {
     restartGame: () => void;
+    winner: string;
   },
   any
 > {
@@ -14,16 +15,6 @@ class EndScreen extends React.Component<
     this.restart = this.restart.bind(this);
   }
 
-  public componentDidMount() {
-    fetch('http://localhost:3001/end')
-      .then(rawWinner => {
-        return rawWinner.json();
-      })
-      .then(winner => {
-        this.setState({ winner: winner.winner });
-      });
-  }
-
   public restart() {
     this.props.restartGame();
   }
@@ -31,7 +22,7 @@ class EndScreen extends React.Component<
   public render() {
     return (
       <div className="end-screen">
-        <h1 className="end-text">{this.state.winner} is the winning team!</h1>
+        <h1 className="end-text">{this.props.winner} is the winning team!</h1>
         <Button
           className="end-button"
           content="Restart"

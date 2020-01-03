@@ -27,6 +27,7 @@ class App {
           if (await this.db.bothPlayersReady()) {
             this.io.emit('allReady');
             await this.db.resetReady();
+            await this.db.clearCurrentSearchTerms();
           }
           this.io
             .in(Object.keys(socket.rooms)[0])
@@ -44,7 +45,8 @@ class App {
           await this.db.setNextTrendTerm();
         }
         if (await this.db.gameOver()) {
-          this.io.emit('gameOver');
+          const winner = await this.db.calcWinner();
+          this.io.emit('gameOver', winner);
         }
         const term = await this.db.getTrendTerm();
         this.io.emit('term', term);
