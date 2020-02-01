@@ -6,6 +6,7 @@ class EndScreen extends React.Component<
   {
     restartGame: () => void;
     winner: string;
+    points: { team1: number; team2: number };
   },
   any
 > {
@@ -20,9 +21,18 @@ class EndScreen extends React.Component<
   }
 
   public render() {
+    let winningText = 'Calculating winner..';
+    if (this.props.winner === 'DRAW') {
+      winningText = 'Draw! <br> Both teams got the same amount of points.';
+    }
+    if (this.props.winner !== 'DRAW' && this.props.winner !== '') {
+      winningText = `${this.props.winner} is the winning team!`;
+    }
     return (
       <div className="end-screen">
-        <h1 className="end-text">{this.props.winner} is the winning team!</h1>
+        <h1 className="end-text">{winningText}</h1>
+        <h2>team1: {this.props.points.team1}</h2>
+        <h2>team2: {this.props.points.team2}</h2>
         <Button
           className="end-button"
           content="Restart"

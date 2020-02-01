@@ -130,6 +130,7 @@ class App extends React.Component<{}, IAppState> {
   };
 
   public fetchTerm = () => {
+    console.log('fetch from client');
     this.socket.emit('points');
     this.socket.emit('term');
   };
@@ -155,7 +156,11 @@ class App extends React.Component<{}, IAppState> {
         this.setState({ ready: 0, type: Types.Trend });
         break;
       case Types.Trend:
-        this.fetchTerm();
+        console.log('ready', this.state.ready);
+        if (this.state.ready > 0) {
+          console.log('fetching..');
+          this.fetchTerm();
+        }
         this.setState((prevState: IAppState) => ({
           ready: 0,
           round: prevState.round + 1,
@@ -210,6 +215,7 @@ class App extends React.Component<{}, IAppState> {
               <EndScreen
                 restartGame={this.restartGame}
                 winner={this.state.winner}
+                points={this.state.points}
               />
             ) : (
               <>
