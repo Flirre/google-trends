@@ -148,7 +148,6 @@ class Team extends React.Component<ITeamProps, ITeamState> {
     </div>
   );
 
-  // TODO: Break apart Types into separate components
   public render() {
     return (
       <div className={`${this.props.color} player ${this.props.className}`}>

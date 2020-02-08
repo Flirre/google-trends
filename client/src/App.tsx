@@ -142,7 +142,7 @@ class App extends React.Component<{}, IAppState> {
   }
 
   public readyForNextScreen() {
-    this.socket.emit('ready');
+    this.socket.emit('ready', this.state.type);
   }
 
   public postTeamTerm = (team: string, term: string) => {
@@ -172,6 +172,7 @@ class App extends React.Component<{}, IAppState> {
           ready: 0,
           type: Types.Search
         });
+        this.socket.emit('nextRound');
         break;
     }
   };

@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Application } from 'express-serve-static-core';
 import * as admin from 'firebase-admin';
 import * as googleTrends from 'google-trends-api';
 
@@ -29,7 +28,7 @@ export class DB {
       this.setTerms(fetchedTerms);
       return fetchedTerms;
     } catch (error) {
-      console.error(error);
+      console.error('fetchTerms', error);
       return ['ERROR'];
     }
   }
@@ -53,7 +52,6 @@ export class DB {
   }
 
   public async getTrendData(): Promise<any> {
-    await this.incrementRound();
     let team1Data: any = [];
     let team2Data: any = [];
     let trendData = {};
@@ -98,13 +96,24 @@ export class DB {
   }
 
   public async setNextTrendTerm(): Promise<FirebaseFirestore.WriteResult> {
-    const currentTerm = await this.popTrendTermFromList();
-    if (!currentTerm) {
+    console.log('starting fetch');
+    const documentData = await this.getDocumentData();
+    const terms = documentData!.terms;
+    console.log('termsoutside', terms);
+    console.log('termslength', terms.length);
+    if (terms.length === 0) {
+      console.log('terms0');
       await this.fetchTerms();
-      return this.setNextTrendTerm();
+      const documentData2 = await this.getDocumentData();
+      const terms2 = documentData2!.terms;
+      console.log('temrs-inside', terms2);
     }
+    const nextTerm = await this.popTrendTermFromList();
+    console.log('\n\n\n\n\n\n\n\n');
+    console.log(nextTerm);
+    console.log('\n\n\n\n\n\n\n\n');
     return matchRef.update({
-      currentTerm
+      currentTerm: nextTerm
     });
   }
 
@@ -151,7 +160,7 @@ export class DB {
 
   public resetGameState(): Promise<FirebaseFirestore.WriteResult> {
     return matchRef.update({
-      currentTerm: 'yeet',
+      currentTerm: '',
       maxRounds: 3,
       ready: 0,
       round: 0,
@@ -186,6 +195,12 @@ export class DB {
     return matchRef.update({ team1Term: '', team2Term: '' });
   }
 
+  public incrementRound(): Promise<FirebaseFirestore.WriteResult> {
+    return matchRef.update({
+      round: admin.firestore.FieldValue.increment(1)
+    });
+  }
+
   private setTerms(terms: string[]): Promise<FirebaseFirestore.WriteResult> {
     return matchRef.update({ terms });
   }
@@ -205,7 +220,7 @@ export class DB {
   private async getTermDocumentData(): Promise<FirebaseFirestore.DocumentData> {
     try {
       const document = await this.getTermDocument();
-      const documentData = await document.data()!;
+      const documentData = document.data()!;
       return documentData;
     } catch (error) {
       throw Error(error);
@@ -272,12 +287,6 @@ export class DB {
     });
   }
 
-  private incrementRound(): Promise<FirebaseFirestore.WriteResult> {
-    return matchRef.update({
-      round: admin.firestore.FieldValue.increment(1)
-    });
-  }
-
   private async popTrendTermFromList(): Promise<string> {
     const documentData = await this.getDocumentData();
     const terms = documentData!.terms;
@@ -289,7 +298,7 @@ export class DB {
   private async getDocumentData(): Promise<FirebaseFirestore.DocumentData> {
     try {
       const document = await matchRef.get();
-      const documentData = await document.data()!;
+      const documentData = document.data()!;
       return documentData;
     } catch (error) {
       throw Error(error);

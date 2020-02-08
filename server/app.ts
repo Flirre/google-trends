@@ -17,23 +17,20 @@ class App {
     this.io = socketIO(server);
 
     this.io.on('connection', socket => {
-      console.log(
-        `new connection, current connections: ${Object.keys(
-          this.io.sockets.sockets
-        )}`
-      ),
-        socket.on('ready', async () => {
-          await this.db.incrementReady();
-          if (await this.db.bothPlayersReady()) {
-            this.io.emit('allReady');
-            await this.db.resetReady();
-            await this.db.clearCurrentSearchTerms();
+      socket.on('ready', async type => {
+        await this.db.incrementReady();
+        if (await this.db.bothPlayersReady()) {
+          this.io.emit('allReady');
+          await this.db.resetReady();
+          await this.db.clearCurrentSearchTerms();
+          if (type === 2) {
+            await this.db.incrementRound();
           }
-          this.io
-            .in(Object.keys(socket.rooms)[0])
-            .emit('readyOnServer', await this.db.getReadyPlayers());
-          console.log(socket.rooms);
-        });
+        }
+        this.io
+          .in(Object.keys(socket.rooms)[0])
+          .emit('readyOnServer', await this.db.getReadyPlayers());
+      });
 
       socket.on('points', async () => {
         const points = await this.db.getPoints();
@@ -59,14 +56,12 @@ class App {
 
       socket.on('room', async (room: string) => {
         if (this.isRoomFree(room)) {
-          console.log(`client joined room ${room}`);
+          // console.log(`client joined room ${room}`);
           socket.join(room);
           const nrOfTeamsInRoom = this.io.sockets.adapter.rooms[room].length;
           socket.emit('team', `team${nrOfTeamsInRoom}`);
           if (this.isRoomEmpty(room)) {
-            await this.db.resetReady();
             await this.db.startGame();
-            await this.db.fetchTerms();
           }
         }
       });
@@ -86,7 +81,7 @@ class App {
       });
 
       socket.on('disconnect', () => {
-        console.log('client disconnected');
+        // console.log('client disconnected');
       });
     });
     server.listen(3001, () => console.log('listening on port 3001'));
