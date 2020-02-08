@@ -167,7 +167,7 @@ class Team extends React.Component<ITeamProps, ITeamState> {
         ) : (
           <>
             <div className="teamContainer">
-              <h3 className="center">Waiting for other player..</h3>
+              <h3 className="center loading">Waiting for other player</h3>
             </div>
           </>
         )}
